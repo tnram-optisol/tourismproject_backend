@@ -2,9 +2,7 @@ import * as express from "express";
 import * as jwt from "jsonwebtoken";
 
 export const userMiddleWare = (req, res: express.Response, next) => {
-  console.log(req.headers.role);
   if (parseInt(req.headers.role) === 4) {
-    console.log("running");
     let token = req.headers.authorization.split(" ")[1];
     if (token) {
       jwt.verify(token, "secretKey", (err, result) => {

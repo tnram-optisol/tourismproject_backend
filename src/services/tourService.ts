@@ -40,7 +40,7 @@ export const addTour = async (req, res: express.Response, next) => {
       request.status = false;
       request.user = tour.user;
       await AppDataSource.manager.save(request);
-      return res.status(200).json("Saved Data / Awaiting Confirmation");
+      return res.status(200).json("Saved Tour Data / Awaiting Confirmation");
     }
   }
   return res.status(400).json("No User Exists");
@@ -72,17 +72,16 @@ export const updateTour = async (req, res: express.Response, next) => {
       id: req.body.user,
     },
   });
-
   //update Request
   if (tourExist) {
     let myTour = await tourData.update(tourId, {
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
+      startDate: new Date(req.body.startDate).toLocaleDateString(),
+      endDate: new Date(req.body.endDate).toLocaleDateString(),
       tour_image: "http://localhost:8080/uploads/" + req.file.filename,
       description: req.body.description,
       cost: req.body.cost,
     });
-    return res.status(200).json(myTour);
+    return res.status(200).json("Tour Data Updated");
   }
   return res.status(400).json("Not Found Tour");
 };

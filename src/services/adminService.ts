@@ -21,7 +21,6 @@ export const getAllRequests = async (
 ) => {
   let requests = await requestData.findBy({ status: false });
   let role = parseInt(req.headers.role[1]);
-  console.log("running");
   if (requests) {
     let hotel = await hotelData.findBy({ status: false });
     let tour = await tourData.findBy({ status: false });

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Users } from "./User";
 
 @Entity()
@@ -27,7 +27,7 @@ export class Hotels{
     @Column()
     status:boolean
 
-    @OneToOne(()=>Users,{nullable:false,eager:true})
+    @ManyToOne(()=>Users,{nullable:false,eager:true})
     @JoinColumn({name:'user_id'})
     user:Users
 }

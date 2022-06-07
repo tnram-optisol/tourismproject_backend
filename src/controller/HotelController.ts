@@ -11,6 +11,6 @@ router.get("/view/hotels", hotelService.viewHotel);
 
 router.post("/add/room", hotelService.addRooms);
 
-router.get("/view/room/:id", hotelService.getAllRooms);
+router.get("/view/rooms/:id", hotelService.getAllRooms);
 
 export default router;

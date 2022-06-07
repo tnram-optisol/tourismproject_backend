@@ -35,7 +35,6 @@ export const bookTour = async (
   });
   let bookTour = new BookTour();
   if (bookingExist) {
-    console.log("booking exist");
     bookingExist.max_person = req.body.userData.maxPerson;
     await bookData.save(bookingExist);
 

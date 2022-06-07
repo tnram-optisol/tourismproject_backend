@@ -36,7 +36,7 @@ export const addHotel = async (req, res: express.Response, next) => {
       request.user = hotel.user;
       await AppDataSource.manager.save(request);
   
-      res.status(200).json("Saved Data / Awaiting Confirmation");
+      res.status(200).json("Saved Hotel Data / Awaiting Confirmation");
     }
 }
 
@@ -62,7 +62,7 @@ export const addRooms = async (req, res: express.Response, next) => {
     newRoom.availablity = true;
     newRoom.description = req.body.room.description;
     newRoom.room_image = req.body.room.image;
-    newRoom.room_price = req.body.room.price;
+    newRoom.room_price = req.body.room.cost;
     newRoom.max_person = req.body.room.maxPerson;
     newRoom.hotel = req.body.room.hotel_id;
     await roomData.save(newRoom);
