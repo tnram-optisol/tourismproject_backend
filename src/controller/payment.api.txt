@@ -1,0 +1,162 @@
+function payment_intent(){
+    return stripe.customers
+    .create({
+      email: token.email,
+      source: token.id,
+    })
+    .then(async (customer) => {
+      let stripePaymentIntent = await stripe.paymentIntents.create(
+        {
+          amount: product.totalCost * 100,
+          currency: "inr",
+          receipt_email: token.email,
+          description: `Purchased the ${product.package_name}`,
+          payment_method_types: ["card"],
+          payment_method: "pm_card_visa",
+          customer: customer.id,
+          confirm: true,
+          shipping: {
+            name: token.card.name,
+            address: {
+              line1: token.card.address_line1,
+              line2: token.card.address_line2,
+              city: token.card.address_city,
+              country: token.card.address_country,
+              postal_code: token.card.address_zip,
+            },
+          },
+        },
+        { idempotencyKey }
+      );
+      stripe.paymentIntents
+        .confirm(stripePaymentIntent.id, {
+          payment_method: "pm_card_visa",
+          return_url: `${process.env.DOMAIN_URL}`,
+        })
+        .then(async (charge) => {
+          if (charge.status === "requires_action") {
+            return res.status(200).json({
+              requireAction: true,
+              clientSecret: charge.client_secret,
+            });
+          }
+        });
+    })
+    .catch((err) => {
+      res.send(400).json(err);
+    });
+}
+router.post("/payment", async(req: express.Request, res: express.Response, next) => {
+  const { token, product } = req.body;
+  const generateCoupon = await stripe.coupons.create({
+    percent_off:product.discount,
+    name:"VIPCOUPON",
+    currency:'inr',
+    duration:'forever',
+  })
+  const promotionCode = await stripe.promotionCodes.create({
+    coupon:generateCoupon.id,
+  })
+
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types:['card'],
+    line_items:[
+      {
+        price_data:{
+          product_data:{
+            name:"Test",
+          },
+          currency:'inr',
+          unit_amount:1*100,
+        },
+        description:"Test",
+        quantity:1,
+      }
+    ],
+    success_url:`${process.env.SUCCESS_URL}`,
+    cancel_url:`${process.env.CANCEL_URL}`,
+    mode:'payment',
+    allow_promotion_codes:true
+  })
+  return res.send({url:session.url})
+});
+
+router.post("/payment", (req: express.Request, res: express.Response, next) => {
+  const { token, product } = req.body;
+  return stripe.customers
+    .create({
+      email: token.email,
+      source: token.id,
+    })
+    .then(async (customer) => {
+      let stripePaymentIntent = await stripe.paymentIntents.create(
+        {
+          amount: product.totalCost * 100,
+          currency: "inr",
+          receipt_email: token.email,
+          description: `Purchased the ${product.package_name}`,
+          payment_method_types: ["card"],
+          payment_method: "pm_card_visa",
+          customer: customer.id,
+          confirm: true,
+          shipping: {
+            name: token.card.name,
+            address: {
+              line1: token.card.address_line1,
+              line2: token.card.address_line2,
+              city: token.card.address_city,
+              country: token.card.address_country,
+              postal_code: token.card.address_zip,
+            },
+          },
+        },
+        { idempotencyKey }
+      );
+      stripe.paymentIntents
+        .confirm(stripePaymentIntent.id, {
+          payment_method: "pm_card_visa",
+          return_url: "http://localhost:3000/payment",
+        })
+        .then(async (charge) => {
+          console.log('problem')
+          if (charge.status === "requires_action") {
+            return res.status(200).json({
+              requireAction: true,
+              clientSecret: charge.client_secret,
+            });
+          }
+        });
+    })
+    .catch((err) => {
+      res.send(400).json(err);
+    });
+});
+
+router.post('/get/charges/:id',async(req:express.Request,res:express.Response,next)=>{
+    let paymentId = req.params.id;
+    let paymentBy = await stripe.paymentIntents.retrieve(paymentId);
+    let bookingExist = await bookData.findOneBy({
+        tour:{
+          package_name:req.body.package_name,
+        }
+    })
+    if(bookingExist){
+       const tourOrder = new TourOrders();
+       tourOrder.bookTour = bookingExist;
+       tourOrder.purchased_by = bookingExist.user.name;
+       tourOrder.email = paymentBy.receipt_email;
+       tourOrder.description = paymentBy.description;
+       tourOrder.orderCost = paymentBy.amount;
+       tourOrder.paymentId = paymentId;
+       tourOrder.order_id = idempotencyKey;
+       tourOrder.user = bookingExist.user;
+       await AppDataSource.manager.save(tourOrder);
+       bookingExist.book_status = true;
+       bookingExist.payment = true;
+       await  bookData.save(bookingExist);
+       return res.status(200).json({order:tourOrder, msg:"Payment Done"})
+    }
+    return res.status(400).json('Data Not Found')
+})
+

@@ -1,0 +1,46 @@
+return stripe.customers
+    .create({
+      email: token.email,
+      source: token.id,
+    })
+    .then(async (customer) => {
+      let stripePaymentIntent = await stripe.paymentIntents.create(
+        {
+          amount: product.totalCost * 100,
+          currency: "inr",
+          receipt_email: token.email,
+          description: `Purchased the ${product.package_name}`,
+          payment_method_types: ["card"],
+          payment_method: "pm_card_visa",
+          customer: customer.id,
+          confirm: true,
+          shipping: {
+            name: token.card.name,
+            address: {
+              line1: token.card.address_line1,
+              line2: token.card.address_line2,
+              city: token.card.address_city,
+              country: token.card.address_country,
+              postal_code: token.card.address_zip,
+            },
+          },
+        },
+        { idempotencyKey }
+      );
+      stripe.paymentIntents
+        .confirm(stripePaymentIntent.id, {
+          payment_method: "pm_card_visa",
+          return_url: `${process.env.DOMAIN_URL}`,
+        })
+        .then(async (charge) => {
+          if (charge.status === "requires_action") {
+            return res.status(200).json({
+              requireAction: true,
+              clientSecret: charge.client_secret,
+            });
+          }
+        });
+    })
+    .catch((err) => {
+      res.send(400).json(err);
+    });
