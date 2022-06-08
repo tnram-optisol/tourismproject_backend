@@ -13,10 +13,8 @@ import paymentController from "./controller/PaymentController";
 import orderController from "./controller/OrderController";
 import stripeController from "./controller/StripeWebHook";
 import reviewController from "./controller/ReviewController";
-import { authMiddleWare } from "./MiddleWare/authMiddleWare";
-import { adminMiddleWare } from "./MiddleWare/adminMiddleWare";
-import { tourMiddleWare } from "./MiddleWare/tourMiddleWare";
-import { userMiddleWare } from "./MiddleWare/userMiddleWare";
+import { checkRole } from "./MiddleWare/checkRole/checkRole";
+import { verifyJWT } from "./MiddleWare/jwtToken/verifyJWT";
 
 require("dotenv").config();
 
@@ -38,17 +36,17 @@ AppDataSource.initialize()
 
     app.use(reviewController);
 
-    app.use(authMiddleWare, hotelController);
+    app.use("/hotel", checkRole, verifyJWT, hotelController);
 
-    app.use(tourMiddleWare, tourController);
+    app.use("/tour", checkRole, verifyJWT, tourController);
 
-    app.use(adminMiddleWare, adminController);
+    app.use("/admin", checkRole, verifyJWT, adminController);
 
-    app.use(userMiddleWare, bookController);
+    app.use(checkRole, verifyJWT, bookController);
 
-    app.use(userMiddleWare, paymentController);
+    app.use(checkRole, verifyJWT, paymentController);
 
-    app.use(userMiddleWare, orderController);
+    app.use(checkRole, verifyJWT, orderController);
 
     app.use((req: express.Request, res: express.Response, next) => {
       console.log("Middle Ware");

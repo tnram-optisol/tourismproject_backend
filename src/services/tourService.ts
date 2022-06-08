@@ -4,6 +4,7 @@ import {
   REQUEST_DATA,
   TOUR,
   TOUR_DATA,
+  TOUR_ORDER_DATA,
 } from "../constants/db.constants";
 
 export const addTour = async (req, res: express.Response, next) => {
@@ -13,7 +14,6 @@ export const addTour = async (req, res: express.Response, next) => {
       package_name: req.body.name,
       user: req.body.user.id,
     });
-    console.log(req.file.filename);
     if (tourExist) {
       return res.status(400).json("Tour Exists");
     } else {
@@ -91,7 +91,6 @@ export const tourPaginate = async (req, res: express.Response, next) => {
   //const skip= (take-1) > 1 ? (take-1):0
   const skip = (parseInt(req.params.take) - 1) * ITEMS_PER_PAGE;
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-  console.log(userId);
   let totalTour = await TOUR_DATA.find({
     where: {
       user: {
@@ -105,4 +104,20 @@ export const tourPaginate = async (req, res: express.Response, next) => {
     return res.status(200).json(totalTour);
   }
   return res.status(400).json("No Tour Available");
+};
+
+export const getAllOrders = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  let tourOrderExist = await TOUR_ORDER_DATA.find({
+    order: {
+      orderdAt: "DESC",
+    },
+  });
+  if (tourOrderExist) {
+    return res.status(200).json(tourOrderExist);
+  }
+  return res.status(400).json("No Orders Exists...");
 };
