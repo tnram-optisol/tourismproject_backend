@@ -1,27 +1,18 @@
 import * as express from "express";
-import { AppDataSource } from "../data-source";
-import { Tours } from "../entity/Tours";
-import { Requests } from "../entity/Requests";
-import { AdminMail } from "../entity/AdminMail";
-import { Hotels } from "../entity/Hotels";
-import { Rooms } from "../entity/Rooms";
-import { Banner } from "../entity/Banner";
-
 import * as mailService from "./mailService";
-import { Any, In } from "typeorm";
-import { Category } from "../entity/Category";
-import { TourCategory } from "../entity/TourCategory";
-
-const tourData = AppDataSource.getRepository(Tours);
-const hotelData = AppDataSource.getRepository(Hotels);
-const adminMail = AppDataSource.getRepository(AdminMail);
-const roomData = AppDataSource.getRepository(Rooms);
-const bannerData = AppDataSource.getRepository(Banner);
-const categoryData = AppDataSource.getRepository(Category);
-const tourCategory = AppDataSource.getRepository(TourCategory);
+import {
+  ADMIN_MAIL,
+  ADMIN_MAIL_DATA,
+  BANNER_DATA,
+  CATEGORY_DATA,
+  HOTEL_DATA,
+  ROOM_DATA,
+  TOUR_CATEGORY_DATA,
+  TOUR_DATA,
+} from "../constants/db.constants";
 
 export const getAllTours = async (req, res: express.Response, next) => {
-  let tourExist = await tourData.findBy({ status: true });
+  let tourExist = await TOUR_DATA.findBy({ status: true });
   if (tourExist) {
     return res.status(200).json(tourExist);
   }
@@ -29,7 +20,7 @@ export const getAllTours = async (req, res: express.Response, next) => {
 };
 
 export const getHomeTour = async (req, res: express.Response, next) => {
-  let bannerExist = await bannerData.find({
+  let bannerExist = await BANNER_DATA.find({
     order: {
       sequence: "ASC",
     },
@@ -42,7 +33,7 @@ export const getHomeTour = async (req, res: express.Response, next) => {
 
 export const viewTour = async (req, res: express.Response, next) => {
   let tour_id = +req.params.id;
-  let tourExist = await tourData.findBy({ tour_id: tour_id });
+  let tourExist = await TOUR_DATA.findBy({ tour_id: tour_id });
   if (tourExist) {
     return res.status(200).json(tourExist);
   }
@@ -50,7 +41,7 @@ export const viewTour = async (req, res: express.Response, next) => {
 };
 
 export const viewHotel = async (req, res: express.Response, next) => {
-  let hotelExist = await hotelData.find({
+  let hotelExist = await HOTEL_DATA.find({
     where: {
       status: true,
     },
@@ -63,7 +54,7 @@ export const viewHotel = async (req, res: express.Response, next) => {
 
 export const viewRooms = async (req, res: express.Response, next) => {
   let roomId = +req.params.id;
-  let roomExist = await roomData.find({
+  let roomExist = await ROOM_DATA.find({
     where: {
       room_id: roomId,
     },
@@ -77,7 +68,7 @@ export const viewRooms = async (req, res: express.Response, next) => {
 export const getRooms = async (req, res: express.Response, next) => {
   let hotelId = +req.params.id;
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-  let roomExist = await roomData.find({
+  let roomExist = await ROOM_DATA.find({
     where: {
       hotel: {
         hotel_id: hotelId,
@@ -96,7 +87,7 @@ export const paginateTour = async (req, res: express.Response, next) => {
   //const skip= (take-1) > 1 ? (take-1):0
   const skip = (parseInt(req.params.take) - 1) * ITEMS_PER_PAGE;
   console.log(take, skip);
-  let totalTour = await bannerData.find({
+  let totalTour = await BANNER_DATA.find({
     where: {
       tour: {
         status: true,
@@ -116,11 +107,11 @@ export const sendMail = async (
   res: express.Response,
   next
 ) => {
-  let userMail = new AdminMail();
+  let userMail = ADMIN_MAIL;
   userMail.user_mail = req.body.user.email;
   userMail.user_name = req.body.user.name;
   userMail.user_message = req.body.user.message;
-  await adminMail.save(userMail);
+  await ADMIN_MAIL_DATA.save(userMail);
   const message = {
     from: req.body.user.email,
     to: "admin@abc.com",
@@ -139,8 +130,7 @@ export const sendMail = async (
 export const filterByCategory = async (req, res: express.Response, next) => {
   let categoryId = req.params.category;
   if (categoryId > 0) {
-    let tourExist = await tourCategory
-      .createQueryBuilder("category")
+    let tourExist = await TOUR_CATEGORY_DATA.createQueryBuilder("category")
       .innerJoinAndSelect("category.tour", "tours")
       .where(":category= ANY(category.category)", { category: +categoryId })
       .getMany();
@@ -148,8 +138,7 @@ export const filterByCategory = async (req, res: express.Response, next) => {
       return res.status(200).json(tourExist);
     }
   } else {
-    let tourExist = await bannerData
-      .createQueryBuilder("banner")
+    let tourExist = await BANNER_DATA.createQueryBuilder("banner")
       .innerJoinAndSelect("banner.tour", "tours")
       .getMany();
     if (tourExist) {
@@ -165,7 +154,7 @@ export const getCategory = async (
   res: express.Response,
   next
 ) => {
-  const result = await categoryData.find();
+  const result = await CATEGORY_DATA.find();
   return res.status(200).json(result);
 };
 
@@ -175,13 +164,12 @@ export const searchTourData = async (
   next
 ) => {
   const location = req.params.location;
-  const result = await categoryData.findOneBy({
+  const result = await CATEGORY_DATA.findOneBy({
     category: location,
   });
   let categoryId = result.id;
   if (categoryId > 0) {
-    let tourExist = await tourCategory
-      .createQueryBuilder("category")
+    let tourExist = await TOUR_CATEGORY_DATA.createQueryBuilder("category")
       .innerJoinAndSelect("category.tour", "tours")
       .where(":category= ANY(category.category)", { category: +categoryId })
       .getMany();
@@ -189,8 +177,7 @@ export const searchTourData = async (
       return res.status(200).json(tourExist);
     }
   } else {
-    let tourExist = await bannerData
-      .createQueryBuilder("banner")
+    let tourExist = await BANNER_DATA.createQueryBuilder("banner")
       .innerJoinAndSelect("banner.tour", "tours")
       .getMany();
     if (tourExist) {

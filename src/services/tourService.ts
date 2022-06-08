@@ -1,16 +1,10 @@
 import * as express from "express";
-import e = require("express");
-import { AppDataSource } from "../data-source";
-import { Tours } from "../entity/Tours";
-import { Requests } from "../entity/Requests";
-
-const tourData = AppDataSource.getRepository(Tours);
-const requestData = AppDataSource.getRepository(Requests);
+import { REQUEST, REQUEST_DATA, TOUR, TOUR_DATA } from "../constants/db.constants";
 
 export const addTour = async (req, res: express.Response, next) => {
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
   if (userId > 0) {
-    let tourExist = await tourData.findOneBy({
+    let tourExist = await TOUR_DATA.findOneBy({
       package_name: req.body.name,
       user: req.body.user.id,
     });
@@ -18,7 +12,7 @@ export const addTour = async (req, res: express.Response, next) => {
     if (tourExist) {
       return res.status(400).json("Tour Exists");
     } else {
-      let tour = new Tours();
+      let tour = TOUR;
       tour.package_name = req.body.name;
       tour.from = req.body.from;
       tour.to = req.body.to;
@@ -35,11 +29,11 @@ export const addTour = async (req, res: express.Response, next) => {
       tour.user = req.body.user;
 
       console.log(tour.user);
-      await AppDataSource.manager.save(tour);
-      let request = new Requests();
+      await TOUR_DATA.manager.save(tour);
+      let request = REQUEST;
       request.status = false;
       request.user = tour.user;
-      await AppDataSource.manager.save(request);
+      await REQUEST_DATA.manager.save(request);
       return res.status(200).json("Saved Tour Data / Awaiting Confirmation");
     }
   }
@@ -49,7 +43,7 @@ export const addTour = async (req, res: express.Response, next) => {
 export const viewTours = async (req, res: express.Response, next) => {
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
   if (userId > 0) {
-    let totalTour = await tourData.findBy({
+    let totalTour = await TOUR_DATA.findBy({
       user: {
         id: userId,
       },
@@ -66,7 +60,7 @@ export const updateTour = async (req, res: express.Response, next) => {
   let roleId = parseInt(req.headers.role[0]);
   let name = req.body.name;
   let tourId = req.body.tourId;
-  let tourExist = await tourData.findOneBy({
+  let tourExist = await TOUR_DATA.findOneBy({
     package_name: req.body.name,
     user: {
       id: req.body.user,
@@ -74,7 +68,7 @@ export const updateTour = async (req, res: express.Response, next) => {
   });
   //update Request
   if (tourExist) {
-    let myTour = await tourData.update(tourId, {
+    let myTour = await TOUR_DATA.update(tourId, {
       startDate: new Date(req.body.startDate).toLocaleDateString(),
       endDate: new Date(req.body.endDate).toLocaleDateString(),
       tour_image: "http://localhost:8080/uploads/" + req.file.filename,
@@ -93,7 +87,7 @@ export const tourPaginate = async (req, res: express.Response, next) => {
   const skip = (parseInt(req.params.take) - 1) * ITEMS_PER_PAGE;
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
   console.log(userId);
-  let totalTour = await tourData.find({
+  let totalTour = await TOUR_DATA.find({
     where: {
       user: {
         id: userId,

@@ -1,17 +1,7 @@
 import * as express from "express";
-import { AppDataSource } from "../data-source";
-import { BookTour } from "../entity/BookTour";
-import { Tours } from "../entity/Tours";
 import { validationResult } from "express-validator";
-import { TourOrders } from "../entity/TourOrders";
-import { Rooms } from "../entity/Rooms";
-import { BookRoom } from "../entity/BookRoom";
+import { BOOKROOM, BOOKTOUR, BOOK_ROOM_DATA, BOOK_TOUR_DATA, TOUR_DATA, TOUR_ORDER_DATA } from "../constants/db.constants";
 
-const tourData = AppDataSource.getRepository(Tours);
-const bookData = AppDataSource.getRepository(BookTour);
-const tourOrder = AppDataSource.getRepository(TourOrders);
-const roomData = AppDataSource.getRepository(Rooms);
-const bookRoomData = AppDataSource.getRepository(BookRoom);
 
 export const bookTour = async (
   req: express.Request,
@@ -24,7 +14,7 @@ export const bookTour = async (
     return res.status(400).json({ errors: validationErr.array() });
     next();
   }
-  let bookingExist = await bookData.findOneBy({
+  let bookingExist = await BOOK_TOUR_DATA.findOneBy({
     tour: {
       tour_id: tourId,
     },
@@ -33,13 +23,13 @@ export const bookTour = async (
     },
     payment: false,
   });
-  let bookTour = new BookTour();
+  let bookTour = BOOKTOUR
   if (bookingExist) {
     bookingExist.max_person = req.body.userData.maxPerson;
-    await bookData.save(bookingExist);
+    await BOOK_TOUR_DATA.save(bookingExist);
 
     if (bookingExist.payment) {
-      let myTourData = await tourData.findOneBy({
+      let myTourData = await TOUR_DATA.findOneBy({
         tour_id: tourId,
       });
     }
@@ -52,7 +42,7 @@ export const bookTour = async (
   bookTour.user = req.body.userData.user.id;
   bookTour.tour = tourId;
 
-  await bookData.save(bookTour);
+  await BOOK_TOUR_DATA.save(bookTour);
   return res.status(200).json("Awaiting your confirmation with payment");
   
 };
@@ -63,7 +53,7 @@ export const cancelBookTour = async (
   next
 ) => {
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-  let bookingExist = await bookData.findOneBy({
+  let bookingExist = await BOOK_TOUR_DATA.findOneBy({
     user: {
       id: userId,
     },
@@ -72,16 +62,16 @@ export const cancelBookTour = async (
   });
   if (bookingExist) {
     if (bookingExist.payment) {
-      let myTourData = await tourData.findOneBy({
+      let myTourData = await TOUR_DATA.findOneBy({
         tour_id: bookingExist.tour.tour_id,
       });
       if (myTourData) {
         myTourData.max_person = myTourData.max_person + bookingExist.max_person;
-        await tourData.save(myTourData);
+        await TOUR_DATA.save(myTourData);
         return res.status(200).json("Booking Done Successfully");
       }
     }
-    await bookData.remove(bookingExist);
+    await BOOK_TOUR_DATA.remove(bookingExist);
     return res.status(200).json("Booking Removed Successfully");
   }
 
@@ -94,7 +84,7 @@ export const viewBookings = async (
   next
 ) => {
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-  let tourBooking = await bookData.find({
+  let tourBooking = await BOOK_TOUR_DATA.find({
     where: {
       user: {
         id: userId,
@@ -105,7 +95,7 @@ export const viewBookings = async (
       book_id: "DESC",
     },
   });
-  let roomBooking  = await bookRoomData.find({
+  let roomBooking  = await BOOK_ROOM_DATA.find({
       where:{
           user:{
               id:userId
@@ -129,7 +119,7 @@ export const cancelOrder = async (
   next
 ) => {
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-  let orderExist = await tourOrder.find({
+  let orderExist = await TOUR_ORDER_DATA.find({
     where: {
       user: {
         id: userId,
@@ -153,7 +143,7 @@ export const bookRoom = async (
 ) => {
   let roomId = req.body.bookHotel.roomId;
 
-  const bookRoom = new BookRoom();
+  const bookRoom = BOOKROOM;
   bookRoom.book_status = true;
   bookRoom.total_person = req.body.bookHotel.maxPerson;
   bookRoom.in_Date = req.body.bookHotel.inDate;
@@ -166,7 +156,7 @@ export const bookRoom = async (
     req.body.bookHotel.outDate
   );
 
-  await bookRoomData.save(bookRoom);
+  await BOOK_ROOM_DATA.save(bookRoom);
   return res.status(200).json("Awaiting your confirmation with payment");
 };
 

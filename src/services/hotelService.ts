@@ -1,16 +1,10 @@
 import * as express from "express";
-import { AppDataSource } from "../data-source";
-import { Hotels } from "../entity/Hotels";
-import { Requests } from "../entity/Requests";
-import { Rooms } from "../entity/Rooms";
+import { HOTEL, HOTEL_DATA, REQUEST, ROOM, ROOM_DATA } from "../constants/db.constants";
 
-const hotelData = AppDataSource.getRepository(Hotels);
-const requestData = AppDataSource.getRepository("requests");
-const roomData = AppDataSource.getRepository(Rooms);
 
 export const addHotel = async (req, res: express.Response, next) => {
     let roleId = parseInt(req.headers.role[0]);
-    let hotelExist = await hotelData.findOneBy({
+    let hotelExist = await HOTEL_DATA.findOneBy({
       hotel_name: req.body.hotel.name,
       user: req.body.hotel.user.id,
     });
@@ -19,7 +13,7 @@ export const addHotel = async (req, res: express.Response, next) => {
       return res.status(400).json(hotelExist);
       next();
     } else {
-      let hotel = new Hotels();
+      let hotel = HOTEL;
       hotel.hotel_name = req.body.hotel.name;
       hotel.latitude = req.body.hotel.latitude;
       hotel.longitude = req.body.hotel.longitude;
@@ -29,12 +23,12 @@ export const addHotel = async (req, res: express.Response, next) => {
       hotel.user = req.body.hotel.user.id;
       hotel.status = false;
       console.log(hotel.user);
-      await AppDataSource.manager.save(hotel);
+      await HOTEL_DATA.manager.save(hotel);
   
-      let request = new Requests();
+      let request = REQUEST;
       request.status = false;
       request.user = hotel.user;
-      await AppDataSource.manager.save(request);
+      await HOTEL_DATA.manager.save(request);
   
       res.status(200).json("Saved Hotel Data / Awaiting Confirmation");
     }
@@ -42,7 +36,7 @@ export const addHotel = async (req, res: express.Response, next) => {
 
 export const viewHotel = async (req, res: express.Response, next) => {
     let userId = req.headers.user[0];
-    let hotelExist = await hotelData.findBy(
+    let hotelExist = await HOTEL_DATA.findBy(
         {
             user:{
                 id:parseInt(userId)
@@ -57,7 +51,7 @@ export const viewHotel = async (req, res: express.Response, next) => {
 
 export const addRooms = async (req, res: express.Response, next) => {
     let roleId = parseInt(req.headers.role[0]);
-    const newRoom = new Rooms();
+    const newRoom = ROOM;
     newRoom.room_name = req.body.room.name;
     newRoom.availablity = true;
     newRoom.description = req.body.room.description;
@@ -65,14 +59,14 @@ export const addRooms = async (req, res: express.Response, next) => {
     newRoom.room_price = req.body.room.cost;
     newRoom.max_person = req.body.room.maxPerson;
     newRoom.hotel = req.body.room.hotel_id;
-    await roomData.save(newRoom);
+    await ROOM_DATA.save(newRoom);
     res.status(200).json("Saved Successfull");
 }
 
 export const getAllRooms = async (req, res: express.Response, next) => {
     let hotelId = +req.params.id
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-    let roomExist = await roomData.find({
+    let roomExist = await ROOM_DATA.find({
         where:{
             hotel:{
                 hotel_id:hotelId

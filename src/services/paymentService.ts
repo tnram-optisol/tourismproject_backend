@@ -2,14 +2,10 @@ import Stripe from "stripe";
 import * as express from "express";
 import "dotenv/config";
 import { v4 as uuidv4 } from "uuid";
-import { BookTour } from "../entity/BookTour";
-import { AppDataSource } from "../data-source";
-import { TourOrders } from "../entity/TourOrders";
+import { BOOK_TOUR_DATA, TOUR_ORDER_DATA } from "../constants/db.constants";
 
 require("dotenv").config();
 
-const bookData = AppDataSource.getRepository(BookTour);
-const tourOrder = AppDataSource.getRepository(TourOrders);
 const idempotencyKey = uuidv4();
 
 const stripe = new Stripe(`${process.env.STRIPE_KEY}`, {
@@ -81,7 +77,7 @@ export const refundPayment = async (
 ) => {
   let bookId = +req.body.bookId;
   let userId = +req.headers.user[0];
-  let orderExist = await tourOrder.findOneBy({
+  let orderExist = await TOUR_ORDER_DATA.findOneBy({
     bookTour: {
       book_id: bookId,
     },
@@ -90,7 +86,7 @@ export const refundPayment = async (
     },
     orderStatus: true,
   });
-  let bookingExist = await bookData.findOneBy({
+  let bookingExist = await BOOK_TOUR_DATA.findOneBy({
     book_id: bookId,
     user: {
       id: userId,
@@ -104,8 +100,8 @@ export const refundPayment = async (
       .then(async (result) => {
         orderExist.orderStatus = false;
         bookingExist.book_status = false;
-        await bookData.save(bookingExist);
-        await tourOrder.save(orderExist);
+        await BOOK_TOUR_DATA.save(bookingExist);
+        await TOUR_ORDER_DATA.save(orderExist);
       })
       .catch((err) => {
         console.log(err);
