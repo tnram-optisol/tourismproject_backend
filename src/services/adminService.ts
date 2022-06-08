@@ -89,8 +89,8 @@ export const addCategory = async (
   res: express.Response,
   next
 ) => {
-  let name = req.body.category.category_name;
-  let image = req.body.category.category_image;
+  let name = req.body.category_name;
+  let image = "http://localhost:8080/uploads/" + req.file.filename;
   let newCategory = CATEGORY;
   newCategory.image = image;
   newCategory.category = name;
@@ -118,4 +118,16 @@ export const updateTourCategory = async (
   newCategory.closed_on = new Date(req.body.tour.closedOn);
   await TOUR_CATEGORY_DATA.save(newCategory);
   return res.status(200).json("Data Updated");
+};
+
+export const deleteCategory = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  const category_id = +req.params.id;
+  const result = await CATEGORY_DATA.delete({
+    id: category_id,
+  });
+  return res.status(200).json(result);
 };
