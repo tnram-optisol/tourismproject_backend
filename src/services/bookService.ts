@@ -1,7 +1,13 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
-import { BOOKROOM, BOOKTOUR, BOOK_ROOM_DATA, BOOK_TOUR_DATA, TOUR_DATA, TOUR_ORDER_DATA } from "../constants/db.constants";
-
+import {
+  BOOKROOM,
+  BOOKTOUR,
+  BOOK_ROOM_DATA,
+  BOOK_TOUR_DATA,
+  TOUR_DATA,
+  TOUR_ORDER_DATA,
+} from "../constants/db.constants";
 
 export const bookTour = async (
   req: express.Request,
@@ -23,7 +29,7 @@ export const bookTour = async (
     },
     payment: false,
   });
-  let bookTour = BOOKTOUR
+  let bookTour = BOOKTOUR;
   if (bookingExist) {
     bookingExist.max_person = req.body.userData.maxPerson;
     await BOOK_TOUR_DATA.save(bookingExist);
@@ -44,7 +50,6 @@ export const bookTour = async (
 
   await BOOK_TOUR_DATA.save(bookTour);
   return res.status(200).json("Awaiting your confirmation with payment");
-  
 };
 
 export const cancelBookTour = async (
@@ -95,19 +100,19 @@ export const viewBookings = async (
       book_id: "DESC",
     },
   });
-  let roomBooking  = await BOOK_ROOM_DATA.find({
-      where:{
-          user:{
-              id:userId
-          },
-        book_status:true
+  let roomBooking = await BOOK_ROOM_DATA.find({
+    where: {
+      user: {
+        id: userId,
       },
-      order:{
-          id:"DESC"
-      }
-  })
+      book_status: true,
+    },
+    order: {
+      id: "DESC",
+    },
+  });
   if (tourBooking || roomBooking) {
-    return res.status(200).json({tourBooking,roomBooking});
+    return res.status(200).json({ tourBooking, roomBooking });
     next();
   }
   return res.status(400).json("Book Some Tour Packages");
@@ -163,5 +168,5 @@ export const bookRoom = async (
 function calcTotalDays(inDate: string, outDate: string): number {
   let checkIn = new Date(inDate).getDate();
   let checkOut = new Date(outDate).getDate();
-  return checkOut -checkIn
+  return checkOut - checkIn;
 }

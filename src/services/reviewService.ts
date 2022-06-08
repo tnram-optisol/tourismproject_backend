@@ -1,5 +1,9 @@
 import * as express from "express";
-import { TOUR_DATA, TOUR_REVIEW, TOUR_REVIEW_DATA } from "../constants/db.constants";
+import {
+  TOUR_DATA,
+  TOUR_REVIEW,
+  TOUR_REVIEW_DATA,
+} from "../constants/db.constants";
 export const postReview = async (
   req: express.Request,
   res: express.Response,
@@ -24,8 +28,7 @@ export const getRating = async (
 ) => {
   const id = +req.params.id;
   const tourExist = await TOUR_DATA.findOneBy({ tour_id: id });
-  const viewReview = await TOUR_REVIEW_DATA
-    .createQueryBuilder("review")
+  const viewReview = await TOUR_REVIEW_DATA.createQueryBuilder("review")
     .select(" CAST(AVG(review.rating) AS DECIMAL(16,1))", "rating")
     .where("review.tour_id=:id", { id })
     .getRawOne();
@@ -35,11 +38,15 @@ export const getRating = async (
   return res.status(200).json("No reviews Available");
 };
 
-export const viewReview =  async (req: express.Request, res: express.Response, next) => {
-    const tourExist = await TOUR_DATA.findOneBy({ tour_id: +req.params.id });
-    const viewReview = await TOUR_REVIEW_DATA.findBy({ tour: tourExist });
-    if (viewReview) {
-      return res.status(200).json(viewReview);
-    }
-    return res.status(200).json("No reviews Available");
+export const viewReview = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  const tourExist = await TOUR_DATA.findOneBy({ tour_id: +req.params.id });
+  const viewReview = await TOUR_REVIEW_DATA.findBy({ tour: tourExist });
+  if (viewReview) {
+    return res.status(200).json(viewReview);
   }
+  return res.status(200).json("No reviews Available");
+};

@@ -1,5 +1,10 @@
 import * as express from "express";
-import { REQUEST, REQUEST_DATA, TOUR, TOUR_DATA } from "../constants/db.constants";
+import {
+  REQUEST,
+  REQUEST_DATA,
+  TOUR,
+  TOUR_DATA,
+} from "../constants/db.constants";
 
 export const addTour = async (req, res: express.Response, next) => {
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;

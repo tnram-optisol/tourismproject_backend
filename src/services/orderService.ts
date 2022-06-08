@@ -32,26 +32,30 @@ export const viewOrder = async (
   return res.status(400).json("No Orders Exists...");
 };
 
-export const getAllOrders = async (req: express.Request, res: express.Response, next) => {
-    const roleId = +req.headers.role[0];
-    if (roleId === 3) {
-      let tourOrderExist = await TOUR_ORDER_DATA.find({
-        order: {
-          orderdAt: "DESC",
-        },
-      });
-      if (tourOrderExist) {
-        return res.status(200).json(tourOrderExist);
-      }
-    } else {
-      let hotelOrderExist = await HOTEL_ORDER_DATA.find({
-        order: {
-          orderdAt: "DESC",
-        },
-      });
-      if (hotelOrderExist) {
-        return res.status(200).json(hotelOrderExist);
-      }
+export const getAllOrders = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  const roleId = +req.headers.role[0];
+  if (roleId === 3) {
+    let tourOrderExist = await TOUR_ORDER_DATA.find({
+      order: {
+        orderdAt: "DESC",
+      },
+    });
+    if (tourOrderExist) {
+      return res.status(200).json(tourOrderExist);
     }
-    return res.status(400).json("No Orders Exists...");
+  } else {
+    let hotelOrderExist = await HOTEL_ORDER_DATA.find({
+      order: {
+        orderdAt: "DESC",
+      },
+    });
+    if (hotelOrderExist) {
+      return res.status(200).json(hotelOrderExist);
+    }
   }
+  return res.status(400).json("No Orders Exists...");
+};

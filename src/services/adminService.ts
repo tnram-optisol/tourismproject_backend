@@ -1,5 +1,15 @@
 import * as express from "express";
-import { BANNER, BANNER_DATA, CATEGORY, CATEGORY_DATA, HOTEL_DATA, REQUEST_DATA, TOURCATEGORY, TOUR_CATEGORY_DATA, TOUR_DATA } from "../constants/db.constants";
+import {
+  BANNER,
+  BANNER_DATA,
+  CATEGORY,
+  CATEGORY_DATA,
+  HOTEL_DATA,
+  REQUEST_DATA,
+  TOURCATEGORY,
+  TOUR_CATEGORY_DATA,
+  TOUR_DATA,
+} from "../constants/db.constants";
 
 export const getAllRequests = async (
   req: express.Request,
@@ -21,8 +31,7 @@ export const adminApproval = async (req, res: express.Response, next) => {
   let role = req.body.role;
   let status = req.body.status;
   let property = req.body.property;
-  let sequence = await BANNER_DATA
-    .createQueryBuilder("banner")
+  let sequence = await BANNER_DATA.createQueryBuilder("banner")
     .select("MAX(banner.sequence)", "max")
     .getRawOne();
   if (role === 2) {
@@ -108,5 +117,5 @@ export const updateTourCategory = async (
   newCategory.category = req.body.tour.category;
   newCategory.closed_on = new Date(req.body.tour.closedOn);
   await TOUR_CATEGORY_DATA.save(newCategory);
-  return res.status(200).json("Data Updated")
+  return res.status(200).json("Data Updated");
 };
