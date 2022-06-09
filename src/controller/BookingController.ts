@@ -1,31 +1,101 @@
 import * as express from "express";
-import { body } from "express-validator";
+import { validationResult } from "express-validator";
+import {
+  BOOKROOM,
+  BOOKTOUR,
+  BOOK_ROOM_DATA,
+  BOOK_TOUR_DATA,
+  TOUR_DATA,
+  TOUR_ORDER_DATA,
+} from "../constants/db.constants";
+import {
+  bookNewRoom,
+  cancelTourBooking,
+  saveBookTour,
+  viewRoomBooking,
+  viewTourBooking,
+} from "../services/bookService";
+import { cancelTourOrder } from "../services/orderService";
 
-import * as bookService from "../services/bookService";
+export const bookTour = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  let tourId = req.body.userData.package_id;
+  let userId = req.body.userData.user.id;
+  let maxPerson = req.body.userData.maxPerson;
+  const validationErr = validationResult(req);
+  if (!validationErr.isEmpty()) {
+    return res.status(400).json({ errors: validationErr.array() });
+    next();
+  }
+  const newBooking = await saveBookTour(tourId, userId, maxPerson);
 
-const router = express.Router();
+  return res.status(200).json("Awaiting your confirmation with payment");
+};
 
-router.post(
-  "/book/tour",
-  [
-    body("userData.maxPerson")
-      .isNumeric()
-      .custom((value, { req }) => {
-        if (value >= 6) {
-          throw new Error("Allowed Person must be less than 6");
-        }
-        return true;
-      }),
-  ],
-  bookService.bookTour
-);
+export const cancelBookTour = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+  const response = await cancelTourBooking(userId, req.body.bookId);
+  if (response) {
+    return res.status(200).json("Booking Removed Successfully");
+  }
+  return res.status(400).json("Book Some Tour Packages");
+};
 
-router.get("/bookings/:user", bookService.viewBookings);
+export const viewBookings = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+  let tourBooking = await viewTourBooking(userId);
+  let roomBooking = await viewRoomBooking(userId);
+  if (tourBooking || roomBooking) {
+    return res.status(200).json({ tourBooking, roomBooking });
+    next();
+  }
+  return res.status(400).json("Book Some Tour Packages");
+};
 
-router.patch("/cancel/bookings", bookService.cancelBookTour);
+export const cancelOrder = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+  let orderExist = await cancelTourOrder(userId);
+  if (orderExist) {
+    return res.status(200).json(orderExist);
+  }
+  return res.status(400).json("No order Canceled");
+};
 
-router.get("/cancel/orders", bookService.cancelOrder);
+export const bookRoom = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  let newRoom = {
+    roomId: req.body.bookHotel.roomId,
+    maxPerson: req.body.bookHotel.maxPerson,
+    inDate: req.body.bookHotel.inDate,
+    outDate: req.body.bookHotel.outDate,
+    user: req.body.bookHotel.user,
+    room: req.body.bookHotel.roomId,
+  };
 
-router.post('/book/room',bookService.bookRoom)
+  const result = await bookNewRoom(newRoom);
+  return res.status(200).json("Awaiting your confirmation with payment");
+};
 
-export default router;
+function calcTotalDays(inDate: string, outDate: string): number {
+  let checkIn = new Date(inDate).getDate();
+  let checkOut = new Date(outDate).getDate();
+  return checkOut - checkIn;
+}

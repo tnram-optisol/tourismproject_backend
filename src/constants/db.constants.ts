@@ -7,13 +7,16 @@ import { Category } from "../entity/Category";
 import { HotelOrders } from "../entity/HotelOrders";
 import { Hotels } from "../entity/Hotels";
 import { Requests } from "../entity/Requests";
+import { Roles } from "../entity/Roles";
 import { Rooms } from "../entity/Rooms";
 import { TourCategory } from "../entity/TourCategory";
 import { TourOrders } from "../entity/TourOrders";
 import { TourReview } from "../entity/TourReview";
 import { Tours } from "../entity/Tours";
-import { addRooms } from "../services/hotelService";
+import { Users } from "../entity/User";
 
+export const USER_DATA = AppDataSource.getRepository(Users)
+export const ROLE_DATA = AppDataSource.getRepository(Roles)
 export const REQUEST_DATA = AppDataSource.getRepository(Requests);
 export const HOTEL_DATA = AppDataSource.getRepository(Hotels);
 export const TOUR_DATA = AppDataSource.getRepository(Tours);
@@ -24,7 +27,7 @@ export const BOOK_TOUR_DATA = AppDataSource.getRepository(BookTour);
 export const BOOK_ROOM_DATA = AppDataSource.getRepository(BookRoom);
 export const TOUR_ORDER_DATA = AppDataSource.getRepository(TourOrders);
 export const HOTEL_ORDER_DATA = AppDataSource.getRepository(HotelOrders);
-export const ROOM_DATA = AppDataSource.getRepository(addRooms);
+export const ROOM_DATA = AppDataSource.getRepository(Rooms);
 export const TOUR_REVIEW_DATA = AppDataSource.getRepository(TourReview);
 export const ADMIN_MAIL_DATA = AppDataSource.getRepository(AdminMail);
 

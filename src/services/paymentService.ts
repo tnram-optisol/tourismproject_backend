@@ -3,6 +3,8 @@ import * as express from "express";
 import "dotenv/config";
 import { v4 as uuidv4 } from "uuid";
 import { BOOK_TOUR_DATA, TOUR_ORDER_DATA } from "../constants/db.constants";
+import { tourRefundData } from "./bookService";
+import { tourOrderRefund } from "./orderService";
 
 require("dotenv").config();
 
@@ -12,12 +14,7 @@ const stripe = new Stripe(`${process.env.STRIPE_KEY}`, {
   apiVersion: "2020-08-27",
 });
 
-export const stripeCheckOut = async (
-  req: express.Request,
-  res: express.Response,
-  next
-) => {
-  const { product } = req.body;
+export const createCheckOustSession = async (product) => {
   const generateCoupon = await stripe.coupons.create({
     percent_off: product.discount,
     name: "VIPCOUPON",
@@ -67,46 +64,22 @@ export const stripeCheckOut = async (
     mode: "payment",
     allow_promotion_codes: true,
   });
-  return res.send({ url: session.url });
+  return session;
 };
 
-export const refundPayment = async (
-  req: express.Request,
-  res: express.Response,
-  next
-) => {
-  let bookId = +req.body.bookId;
-  let userId = +req.headers.user[0];
-  let orderExist = await TOUR_ORDER_DATA.findOneBy({
-    bookTour: {
-      book_id: bookId,
-    },
-    user: {
-      id: userId,
-    },
-    orderStatus: true,
-  });
-  let bookingExist = await BOOK_TOUR_DATA.findOneBy({
-    book_id: bookId,
-    user: {
-      id: userId,
-    },
-  });
-  if (orderExist) {
-    stripe.refunds
-      .create({
-        payment_intent: orderExist.paymentId,
-      })
-      .then(async (result) => {
-        orderExist.orderStatus = false;
-        bookingExist.book_status = false;
-        await BOOK_TOUR_DATA.save(bookingExist);
-        await TOUR_ORDER_DATA.save(orderExist);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    return res.status(200).json("Order Canceled");
-  }
-  return res.status(400).json("Data Not Found");
+export const createRefund = async (orderExist, bookingExist) => {
+  return stripe.refunds
+    .create({
+      payment_intent: orderExist.paymentId,
+    })
+    .then(async (result) => {
+      orderExist.orderStatus = false;
+      bookingExist.book_status = false;
+      await BOOK_TOUR_DATA.save(bookingExist);
+      await TOUR_ORDER_DATA.save(orderExist);
+      return orderExist
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };

@@ -3,16 +3,15 @@ import * as express from "express";
 import * as cors from "cors";
 import * as multer from "multer";
 
-import authcontroller from "./controller/AuthController";
-import hotelController from "./controller/HotelController";
-import adminController from "./controller/AdminController";
-import tourController from "./controller/TourController";
-import userController from "./controller/UserController";
-import bookController from "./controller/BookingController";
-import paymentController from "./controller/PaymentController";
-import orderController from "./controller/OrderController";
+import authRouter from "./router/authRouter";
+import adminRouter from "./router/adminRouter";
+import hotelRouter from "./router/hotelRouter";
+import tourRouter from "./router/tourRouter";
+import userRouter from "./router/userRouter";
+import bookRouter from "./router/bookRouter";
+import paymentRouter from "./router/paymentRouter";
+import orderRouter from "./router/orderRouter";
 import stripeController from "./controller/StripeWebHook";
-import reviewController from "./controller/ReviewController";
 import { checkRole } from "./MiddleWare/checkRole/checkRole";
 import { verifyJWT } from "./MiddleWare/jwtToken/verifyJWT";
 
@@ -30,23 +29,21 @@ AppDataSource.initialize()
     app.use(express.json());
     app.use(cors());
 
-    app.use(authcontroller);
+    app.use(authRouter);
 
-    app.use(userController);
+    app.use(userRouter);
 
-    app.use(reviewController);
+    app.use("/hotel", checkRole, verifyJWT, hotelRouter);
 
-    app.use("/hotel", checkRole, verifyJWT, hotelController);
+    app.use("/tour", checkRole, verifyJWT, tourRouter);
 
-    app.use("/tour", checkRole, verifyJWT, tourController);
+    app.use("/admin", checkRole, verifyJWT, adminRouter);
 
-    app.use("/admin", checkRole, verifyJWT, adminController);
+    app.use(checkRole, verifyJWT, bookRouter);
 
-    app.use(checkRole, verifyJWT, bookController);
+    app.use(checkRole, verifyJWT, paymentRouter);
 
-    app.use(checkRole, verifyJWT, paymentController);
-
-    app.use(checkRole, verifyJWT, orderController);
+    app.use(checkRole, verifyJWT, orderRouter);
 
     app.use((req: express.Request, res: express.Response, next) => {
       console.log("Middle Ware");
