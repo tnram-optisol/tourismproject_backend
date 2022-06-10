@@ -1,4 +1,5 @@
 import * as express from "express";
+import { getAllTourOrders } from "../services/orderService";
 import { addNewTour, getTours, updateTourData } from "../services/tourService";
 
 export const addTour = async (req, res: express.Response, next) => {
@@ -89,6 +90,24 @@ export const updateTour = async (req, res: express.Response, next) => {
       cost: req.body.cost,
     });
     return res.status(200).json("Tour Data Updated");
+  }
+  return res.status(400).json("Not Found Tour");
+};
+
+export const getAdminTourOrders = async (req, res: express.Response, next) => {
+  let roleId = parseInt(req.headers.role[0]);
+  let name = req.body.name;
+  let tourId = req.body.tourId;
+  let tourExist = await getTours({
+    package_name: req.body.name,
+    user: {
+      id: req.body.user,
+    },
+  });
+  //update Request
+  if (tourExist) {
+    let myTour = await getAllTourOrders();
+    return res.status(200).json(myTour);
   }
   return res.status(400).json("Not Found Tour");
 };

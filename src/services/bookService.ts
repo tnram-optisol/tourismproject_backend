@@ -61,6 +61,21 @@ export const cancelTourBooking = async (userId, bookId) => {
   return false;
 };
 
+export const cancelRoomBooking = async (userId, bookId) => {
+  const bookingExist = await BOOK_ROOM_DATA.findOneBy({
+    user: {
+      id: userId,
+    },
+    id:bookId,
+    payment: false,
+  });
+  if (bookingExist) {
+    const result = await BOOK_ROOM_DATA.remove(bookingExist);
+    return result;
+  }
+  return false;
+};
+
 export const saveBookTour = async (tourId, userId, maxPerson) => {
   let bookingExist = await BOOK_TOUR_DATA.findOneBy({
     tour: {
@@ -95,7 +110,7 @@ export const bookNewRoom = async (newRoom) => {
   bookRoom.user = newRoom.user;
   bookRoom.room = newRoom.roomId;
   bookRoom.payment = false;
-  bookRoom.book_status= true;
+  bookRoom.book_status = true;
   bookRoom.total_Days = calcTotalDays(newRoom.inDate, newRoom.outDate);
 
   const response = await BOOK_ROOM_DATA.save(bookRoom);
@@ -105,5 +120,8 @@ export const bookNewRoom = async (newRoom) => {
 function calcTotalDays(inDate: string, outDate: string): number {
   let checkIn = new Date(inDate).getDate();
   let checkOut = new Date(outDate).getDate();
+  if (checkIn - checkOut === 0) {
+    return 1;
+  }
   return checkOut - checkIn;
 }

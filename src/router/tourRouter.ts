@@ -1,5 +1,5 @@
 import * as express from "express";
-import { addTour, tourPagination, updateTour, viewTours } from "../controller/TourController";
+import { addTour, getAdminTourOrders, tourPagination, updateTour, viewTours } from "../controller/TourController";
 import upload from "../services/fileUpload";
 
 import * as tourService from '../services/tourService'
@@ -18,6 +18,6 @@ router.get("/:take",tourPagination);
 //POST REQUEST
 router.post("/add",upload.single('file'),addTour);
 
-//router.get("/all/orders", tourService.getAllOrders);
+router.get("/all/orders", getAdminTourOrders);
 
 export default router;

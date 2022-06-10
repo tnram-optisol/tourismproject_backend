@@ -10,6 +10,7 @@ import {
 } from "../constants/db.constants";
 import {
   bookNewRoom,
+  cancelRoomBooking,
   cancelTourBooking,
   saveBookTour,
   viewRoomBooking,
@@ -42,6 +43,19 @@ export const cancelBookTour = async (
 ) => {
   let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
   const response = await cancelTourBooking(userId, req.body.bookId);
+  if (response) {
+    return res.status(200).json("Booking Removed Successfully");
+  }
+  return res.status(400).json("Book Some Tour Packages");
+};
+
+export const cancelBookRoom = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+  const response = await cancelRoomBooking(userId, req.body.bookId);
   if (response) {
     return res.status(200).json("Booking Removed Successfully");
   }

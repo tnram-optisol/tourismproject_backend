@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import {
   bookRoom,
   bookTour,
+  cancelBookRoom,
   cancelBookTour,
   cancelOrder,
   viewBookings,
@@ -28,6 +29,8 @@ router.post(
 router.get("/bookings/:user", viewBookings);
 
 router.patch("/cancel/bookings", cancelBookTour);
+
+router.patch("/cancel/room/bookings", cancelBookRoom);
 
 router.get("/cancel/orders", cancelOrder);
 
