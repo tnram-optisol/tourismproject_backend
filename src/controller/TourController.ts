@@ -83,8 +83,8 @@ export const updateTour = async (req, res: express.Response, next) => {
   //update Request
   if (tourExist) {
     let myTour = await updateTourData(tourId, {
-      startDate: new Date(req.body.startDate).toLocaleDateString(),
-      endDate: new Date(req.body.endDate).toLocaleDateString(),
+      startDate: req.body.startDate,
+      endDate: req.body.endDate,
       tour_image: "http://localhost:8080/uploads/" + req.file.filename,
       description: req.body.description,
       cost: req.body.cost,
