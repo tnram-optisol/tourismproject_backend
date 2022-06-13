@@ -1,5 +1,6 @@
 import * as express from "express";
 import {
+  adminAllOrders,
   adminApproval,
   deleteCategory,
   getAllUsers,
@@ -32,5 +33,7 @@ router.delete("/delete/:id", deleteCategory);
 router.post("/update", updateTourCategory);
 
 router.get("/all/users", getAllUsers);
+
+router.get("/all/orders", adminAllOrders);
 
 export default router;

@@ -15,6 +15,7 @@ import {
   updateCategory,
 } from "../services/categoryService";
 import { hotelRequests, updateHotelStatus } from "../services/hotelService";
+import { getAllHotelOrders, getAllTourOrders } from "../services/orderService";
 import { tourRequests, updateTourData } from "../services/tourService";
 
 export const viewAllRequests = async (
@@ -138,4 +139,17 @@ export const getAllUsers = async (
   const category_id = +req.params.id;
   const result = await findAllUser()
   return res.status(200).json(result);
+};
+
+export const adminAllOrders = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  const tourOrder = await getAllTourOrders();
+  const hotelOrder = await getAllHotelOrders();
+  if(tourOrder || hotelOrder){
+    return res.status(200).json({tourOrder,hotelOrder})
+  }
+  return res.status(401).json("No Orders Exists")
 };

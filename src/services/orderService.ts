@@ -47,7 +47,7 @@ export const getAllTourOrders = async () => {
 };
 
 export const getAllHotelOrders = async () => {
-  const result = await TOUR_ORDER_DATA.find({
+  const result = await HOTEL_ORDER_DATA.find({
     order: {
       orderdAt: "DESC",
     },
