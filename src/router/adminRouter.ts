@@ -2,6 +2,7 @@ import * as express from "express";
 import {
   adminApproval,
   deleteCategory,
+  getAllUsers,
   saveCategory,
   storeSequence,
   updateTourCategory,
@@ -29,5 +30,7 @@ router.get("/category", viewAllCategory);
 router.delete("/delete/:id", deleteCategory);
 
 router.post("/update", updateTourCategory);
+
+router.get("/all/users", getAllUsers);
 
 export default router;

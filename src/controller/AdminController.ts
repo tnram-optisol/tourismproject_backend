@@ -1,6 +1,6 @@
 import * as express from "express";
 import { CATEGORY } from "../constants/db.constants";
-import { getAllRequests } from "../services/adminService";
+import { findAllUser, getAllRequests } from "../services/adminService";
 import {
   getAllBanner,
   getBannerById,
@@ -127,5 +127,15 @@ export const deleteCategory = async (
   const result = await removeCategory({
     id: category_id,
   });
+  return res.status(200).json(result);
+};
+
+export const getAllUsers = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  const category_id = +req.params.id;
+  const result = await findAllUser()
   return res.status(200).json(result);
 };

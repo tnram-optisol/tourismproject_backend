@@ -3,7 +3,7 @@ import { Banner } from "../entity/Banner";
 import { Tours } from "../entity/Tours";
 
 export const getAllBanner = async (query) => {
-  const resultData = await BANNER_DATA.find();
+  const resultData = await BANNER_DATA.find(query);
   return resultData;
 };
 

@@ -2,6 +2,7 @@ import {
   ADMIN_MAIL,
   ADMIN_MAIL_DATA,
   REQUEST_DATA,
+  USER_DATA,
 } from "../constants/db.constants";
 
 export const getAllRequests = async (query) => {
@@ -15,4 +16,9 @@ export const saveMail = async (email, name, message) => {
   userMail.user_name = name;
   userMail.user_message = message;
   await ADMIN_MAIL_DATA.save(userMail);
+};
+
+export const findAllUser = async () => {
+  const response = USER_DATA.findAndCount()
+  return response
 };
