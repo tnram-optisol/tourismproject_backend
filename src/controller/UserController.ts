@@ -149,15 +149,15 @@ export const sendMail = async (
   res: express.Response,
   next
 ) => {
-  let mail = req.body.user.email;
-  let name = req.body.user.name;
-  let messageData = req.body.user.message;
+  let mail = req.body.email;
+  let name = req.body.name;
+  let messageData = req.body.message;
   await saveMail(name, mail, messageData);
   const message = {
-    from: req.body.user.email,
+    from: req.body.email,
     to: "admin@abc.com",
     subject: "Query Mail ",
-    html: `<h1>${req.body.user.message}</h1>`,
+    html: `<h1>${req.body.message}</h1>`,
   };
   mailService.transport.sendMail(message, (err, info) => {
     if (err) {
