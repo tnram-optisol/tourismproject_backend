@@ -5,6 +5,7 @@ import {
   getAllRooms,
   getHotels,
 } from "../services/hotelService";
+import { getAllHotelOrders } from "../services/orderService";
 
 export const viewHotel = async (req, res: express.Response, next) => {
   let userId = req.headers.user[0];
@@ -38,12 +39,12 @@ export const viewAllRooms = async (req, res: express.Response, next) => {
 export const addRooms = async (req, res: express.Response, next) => {
   let roleId = parseInt(req.headers.role[0]);
   let room = {
-    name: req.body.room.name,
-    description: req.body.room.description,
-    image: req.body.room.image,
-    cost: req.body.room.cost,
-    maxPerson: req.body.room.maxPerson,
-    hotel_id: req.body.room.hotel_id,
+    name: req.body.name,
+    description: req.body.description,
+    image: "http://localhost:8080/uploads/" + req.file.filename,
+    cost: req.body.cost,
+    maxPerson: req.body.maxPerson,
+    hotel_id: req.body.hotel_id,
   };
 
   await addNewRoom(room);
@@ -62,16 +63,29 @@ export const addHotel = async (req, res: express.Response, next) => {
     next();
   } else {
     let hotel = {
-      name: req.body.hotel.name,
-      latitude: req.body.hotel.latitude,
-      longitude: req.body.hotel.longitude,
-      address: req.body.hotel.address,
-      license: req.body.hotel.license,
-      image: req.body.hotel.image,
-      user: req.body.hotel.user.id,
+      name: req.body.name,
+      latitude: req.body.latitude,
+      longitude: req.body.longitude,
+      address: req.body.address,
+      license: req.body.license,
+      image: "http://localhost:8080/uploads/" + req.file.filename,
+      user: req.body.user.id,
     };
     await addNewHotel(hotel);
 
     res.status(200).json("Saved Hotel Data / Awaiting Confirmation");
   }
+};
+
+export const hotelAdminAllOrders = async (
+  req: express.Request,
+  res: express.Response,
+  next
+) => {
+  const roleId = +req.headers.role[0];
+  let hotelOrderExist = await getAllHotelOrders();
+    if (hotelOrderExist) {
+      return res.status(200).json(hotelOrderExist);
+    }
+  return res.status(400).json("No Orders Exists...");
 };
