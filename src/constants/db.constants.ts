@@ -15,8 +15,8 @@ import { TourReview } from "../entity/TourReview";
 import { Tours } from "../entity/Tours";
 import { Users } from "../entity/User";
 
-export const USER_DATA = AppDataSource.getRepository(Users)
-export const ROLE_DATA = AppDataSource.getRepository(Roles)
+export const USER_DATA = AppDataSource.getRepository(Users);
+export const ROLE_DATA = AppDataSource.getRepository(Roles);
 export const REQUEST_DATA = AppDataSource.getRepository(Requests);
 export const HOTEL_DATA = AppDataSource.getRepository(Hotels);
 export const TOUR_DATA = AppDataSource.getRepository(Tours);
@@ -42,4 +42,4 @@ export const ROOM = new Rooms();
 export const TOUR = new Tours();
 export const REQUEST = new Requests();
 export const TOUR_REVIEW = new TourReview();
-export const ADMIN_MAIL = new AdminMail()
+export const ADMIN_MAIL = new AdminMail();

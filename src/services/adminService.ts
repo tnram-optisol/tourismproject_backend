@@ -19,6 +19,6 @@ export const saveMail = async (email, name, message) => {
 };
 
 export const findAllUser = async () => {
-  const response = USER_DATA.findAndCount()
-  return response
+  const response = USER_DATA.findAndCount();
+  return response;
 };

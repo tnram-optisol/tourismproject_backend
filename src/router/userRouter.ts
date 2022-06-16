@@ -33,3 +33,6 @@ router.get("/review/:id", userController.viewReview);
 router.get("/rating/:id", userController.viewRating);
 
 export default router;
+
+//for testing purpose
+export { userController };

@@ -4,8 +4,14 @@
    "description": "Awesome project developed with TypeORM.",
    "type": "commonjs",
    "devDependencies": {
+      "@types/chai": "^4.3.1",
+      "@types/chai-http": "^4.2.0",
+      "@types/mocha": "^9.1.1",
       "@types/multer": "^1.4.7",
       "@types/node": "^16.11.10",
+      "chai": "^4.3.6",
+      "chai-http": "^4.3.0",
+      "mocha": "^10.0.0",
       "ts-node": "10.7.0",
       "typescript": "4.5.2"
    },
@@ -25,7 +31,7 @@
       "jsonwebtoken": "^8.5.1",
       "multer": "^1.4.4",
       "nodemailer": "^6.7.5",
-      "nodemon": "^2.0.16",
+       
       "pg": "^8.4.0",
       "reflect-metadata": "^0.1.13",
       "stripe": "^9.0.0",
@@ -34,6 +40,8 @@
    "scripts": {
       "start": "ts-node src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs",
-      "dev": "nodemon --exec ts-node src/index.ts --watch "
+      "dev": "nodemon --exec ts-node src/index.ts --watch ",
+      "test": "mocha -require ts-node/register test/*.*.ts",
+      "test:watch":"mocha -r ts-node/register --watch --watch-files domains/**/*.ts,test/*.ts test/*.*.ts"
    }
 }

@@ -16,13 +16,12 @@ import { checkRole } from "./MiddleWare/checkRole/checkRole";
 import { verifyJWT } from "./MiddleWare/jwtToken/verifyJWT";
 
 require("dotenv").config();
+const app: express.Application = express();
+
+const port: number = 8080 || +process.env.PORT;
 
 AppDataSource.initialize()
   .then(async () => {
-    const app: express.Application = express();
-
-    const port: number = 8080 || +process.env.PORT;
-
     app.use(stripeController);
 
     app.use(express.static(__dirname));
@@ -55,3 +54,5 @@ AppDataSource.initialize()
     });
   })
   .catch((error) => console.log(error));
+
+module.exports = app.listen(8080)
