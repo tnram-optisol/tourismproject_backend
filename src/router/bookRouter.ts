@@ -1,16 +1,9 @@
 import * as express from "express";
 import { body } from "express-validator";
-import {
-  bookRoom,
-  bookTour,
-  cancelBookRoom,
-  cancelBookTour,
-  cancelOrder,
-  viewBookings,
-} from "../controller/BookingController";
+import { BookingController } from "../controller/BookingController";
 
 const router = express.Router();
-
+const bookingController = new BookingController();
 router.post(
   "/book/tour",
   [
@@ -23,17 +16,17 @@ router.post(
         return true;
       }),
   ],
-  bookTour
+  bookingController.bookTour
 );
 
-router.get("/bookings/:user", viewBookings);
+router.get("/bookings/:user", bookingController.viewBookings);
 
-router.patch("/cancel/bookings", cancelBookTour);
+router.patch("/cancel/bookings", bookingController.cancelBookTour);
 
-router.patch("/cancel/room/bookings", cancelBookRoom);
+router.patch("/cancel/room/bookings", bookingController.cancelBookRoom);
 
-router.get("/cancel/orders", cancelOrder);
+router.get("/cancel/orders", bookingController.cancelOrder);
 
-router.post("/book/room", bookRoom);
+router.post("/book/room", bookingController.bookRoom);
 
 export default router;

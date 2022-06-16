@@ -1,9 +1,10 @@
 import * as express from "express";
-import { stripeCheckOut } from "../controller/PaymentController";
+import { PaymentController } from "../controller/PaymentController";
+
 const router = express.Router();
+const paymentController = new PaymentController()
+router.post("/payment", paymentController.stripeCheckOut);
 
-router.post("/payment", stripeCheckOut);
-
-//router.post("/refund", paymentService.refundPayment);
+router.post("/refund", paymentController.refund);
 
 export default router;

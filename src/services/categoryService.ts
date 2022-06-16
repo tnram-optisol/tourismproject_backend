@@ -1,11 +1,14 @@
 import {
+  BANNER_DATA,
   CATEGORY,
   CATEGORY_DATA,
   TOURCATEGORY,
   TOUR_CATEGORY_DATA,
+  TOUR_REVIEW_DATA,
 } from "../constants/db.constants";
 import { Category } from "../entity/Category";
 import { Tours } from "../entity/Tours";
+import { getRating } from "./reviewService";
 
 export const getAllCategory = async () => {
   const resultData = await CATEGORY_DATA.find();
@@ -34,6 +37,15 @@ export const updateCategory = async (
   newCategory.tour = tour;
   newCategory.category = category;
   newCategory.closed_on = closed_on;
+  const categoryExist = await TOUR_CATEGORY_DATA.findOneBy({
+    tour: {
+      tour_id: tour.tour_id,
+    },
+  });
+  if (categoryExist) {
+    const resultData = await TOUR_CATEGORY_DATA.save(categoryExist);
+    return resultData;
+  }
   const resultData = await TOUR_CATEGORY_DATA.save(newCategory);
   return resultData;
 };

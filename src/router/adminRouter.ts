@@ -1,39 +1,29 @@
 import * as express from "express";
-import {
-  adminAllOrders,
-  adminApproval,
-  deleteCategory,
-  getAllUsers,
-  saveCategory,
-  storeSequence,
-  updateTourCategory,
-  viewAllBanner,
-  viewAllCategory,
-  viewAllRequests,
-} from "../controller/AdminController";
-
+import { AdminController } from "../controller/AdminController";
 import upload from "../services/fileUpload";
 
 const router = express.Router();
 
-router.get("/request", viewAllRequests);
+const adminController = new AdminController();
 
-router.patch("/approve", adminApproval);
+router.get("/request", adminController.viewAllRequests);
 
-router.get("/banner", viewAllBanner);
+router.patch("/approve", adminController.adminApproval);
 
-router.patch("/sequence", storeSequence);
+router.get("/banner", adminController.viewAllBanner);
 
-router.post("/category", upload.single("file"), saveCategory);
+router.patch("/sequence", adminController.storeSequence);
 
-router.get("/category", viewAllCategory);
+router.post("/category", upload.single("file"), adminController.saveCategory);
 
-router.delete("/delete/:id", deleteCategory);
+router.get("/category", adminController.viewAllCategory);
 
-router.post("/update", updateTourCategory);
+router.delete("/delete/:id", adminController.deleteCategory);
 
-router.get("/all/users", getAllUsers);
+router.post("/update", adminController.updateTourCategory);
 
-router.get("/all/orders", adminAllOrders);
+router.get("/all/users", adminController.getAllUsers);
+
+router.get("/all/orders", adminController.adminAllOrders);
 
 export default router;

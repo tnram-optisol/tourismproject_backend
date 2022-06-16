@@ -1,14 +1,15 @@
 import * as express from "express";
 import * as bcrypt from "bcrypt";
 import { body } from "express-validator";
-import { userLogin, userSignUp } from "../controller/AuthController";
+import { AuthController } from "../controller/AuthController";
 
 const router = express.Router();
+const authController = new AuthController();
 
 router.post(
   "/signin",
   [body("email").isEmail(), body("password").isLength({ min: 6 })],
-  userLogin
+  authController.userLogin
 );
 
 router.post(
@@ -21,7 +22,7 @@ router.post(
     body("user.contact").isNumeric().withMessage("Invalid Contact"),
     body("user.roleId").isNumeric().withMessage("Invalid RoleId"),
   ],
-  userSignUp
+  authController.userSignUp
 );
 
 export default router;

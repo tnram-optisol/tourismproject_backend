@@ -1,23 +1,18 @@
 import * as express from "express";
-import {
-  addHotel,
-  addRooms,
-  hotelAdminAllOrders,
-  viewAllRooms,
-  viewHotel,
-} from "../controller/HotelController";
+import { HotelController } from "../controller/HotelController";
 import upload from "../services/fileUpload";
 
 const router = express.Router();
+const hotelController = new HotelController();
 
-router.post("/add/hotel", upload.single("file"), addHotel);
+router.post("/add/hotel", upload.single("file"), hotelController.addHotel);
 
-router.get("/view/all", viewHotel);
+router.get("/view/all", hotelController.viewHotel);
 
-router.post("/add/room", upload.single("file"), addRooms);
+router.post("/add/room", upload.single("file"), hotelController.addRooms);
 
-router.get("/view/rooms/:id", viewAllRooms);
+router.get("/view/rooms/:id", hotelController.viewAllRooms);
 
-router.get("/all/orders", hotelAdminAllOrders);
+router.get("/all/orders", hotelController.hotelAdminAllOrders);
 
 export default router;
