@@ -1,4 +1,5 @@
 import * as express from "express";
+import { validationResult } from "express-validator";
 import {
   addNewHotel,
   addNewRoom,
@@ -38,6 +39,16 @@ export class HotelController {
   };
 
   addRooms = async (req, res: express.Response, next) => {
+    const fileType = ["image/jpg", "image/png", "image/jpeg"];
+    if (fileType.findIndex((e) => e === req.file.mimetype) === -1) {
+      return res
+        .status(400)
+        .send("Upload a image file with jpg /jpeg/png extensions");
+    }
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     let roleId = parseInt(req.headers.role[0]);
     let room = {
       name: req.body.name,
@@ -53,12 +64,21 @@ export class HotelController {
   };
 
   addHotel = async (req, res: express.Response, next) => {
+    const fileType = ["image/jpg", "image/png", "image/jpeg"];
     let roleId = parseInt(req.headers.role[0]);
     let hotelExist = await getHotels({
       hotel_name: req.body.hotel.name,
       user: req.body.hotel.user.id,
     });
-
+    if (fileType.findIndex((e) => e === req.file.mimetype) === -1) {
+      return res
+        .status(400)
+        .send("Upload a image file with jpg /jpeg/png extensions");
+    }
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     if (hotelExist) {
       return res.status(400).json(hotelExist);
       next();

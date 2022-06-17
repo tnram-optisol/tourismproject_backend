@@ -1,10 +1,21 @@
 import * as express from "express";
+import { validationResult } from "express-validator";
 import { getAllTourOrders } from "../services/orderService";
 import { addNewTour, getTours, updateTourData } from "../services/tourService";
 
-export class TourController{
+export class TourController {
   addTour = async (req, res: express.Response, next) => {
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    const fileType = ["image/jpg", "image/png", "image/jpeg"];
+    if (fileType.findIndex((e) => e === req.file.mimetype) === -1) {
+      return res
+        .status(400)
+        .send("Upload a image file with jpg /jpeg/png extensions");
+    }
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     if (userId > 0) {
       let tourExist = await getTours({
         package_name: req.body.name,
@@ -33,7 +44,7 @@ export class TourController{
     }
     return res.status(400).json("No User Exists");
   };
-  
+
   viewTours = async (req, res: express.Response, next) => {
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
     if (userId > 0) {
@@ -49,7 +60,7 @@ export class TourController{
     }
     return res.status(400).json("No Tour Available");
   };
-  
+
   tourPagination = async (req, res: express.Response, next) => {
     const ITEMS_PER_PAGE = 2;
     const take = ITEMS_PER_PAGE;
@@ -70,7 +81,7 @@ export class TourController{
     }
     return res.status(400).json("No Tour Available");
   };
-  
+
   updateTour = async (req, res: express.Response, next) => {
     let roleId = parseInt(req.headers.role[0]);
     let name = req.body.name;
@@ -81,6 +92,16 @@ export class TourController{
         id: req.body.user,
       },
     });
+    const fileType = ["image/jpg", "image/png", "image/jpeg"];
+    if (fileType.findIndex((e) => e === req.file.mimetype) === -1) {
+      return res
+        .status(400)
+        .send("Upload a image file with jpg /jpeg/png extensions");
+    }
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     //update Request
     if (tourExist) {
       let myTour = await updateTourData(tourId, {
@@ -94,7 +115,7 @@ export class TourController{
     }
     return res.status(400).json("Not Found Tour");
   };
-  
+
   getAdminTourOrders = async (req, res: express.Response, next) => {
     let roleId = parseInt(req.headers.role[0]);
     let name = req.body.name;

@@ -26,7 +26,6 @@ export class BookingController {
     const validationErr = validationResult(req);
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
-      next();
     }
     const newBooking = await saveBookTour(tourId, userId, maxPerson);
 
@@ -80,6 +79,7 @@ export class BookingController {
   };
 
   bookRoom = async (req: express.Request, res: express.Response, next) => {
+    const validationErr = validationResult(req);
     let newRoom = {
       roomId: req.body.bookHotel.roomId,
       maxPerson: req.body.bookHotel.maxPerson,
@@ -88,7 +88,9 @@ export class BookingController {
       user: req.body.bookHotel.user,
       room: req.body.bookHotel.roomId,
     };
-
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     const result = await bookNewRoom(newRoom);
     return res.status(200).json("Awaiting your confirmation with payment");
   };

@@ -18,4 +18,7 @@ export class Banner {
 
   @Column()
   sequence: number;
+
+  @Column({ nullable: true, type: 'float' })
+  rating:number
 }

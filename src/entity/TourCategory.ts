@@ -22,4 +22,7 @@ export class TourCategory {
 
   @Column({ array: true })
   category: number;
+
+  @Column({ nullable: true, type: "float" })
+  rating: number;
 }

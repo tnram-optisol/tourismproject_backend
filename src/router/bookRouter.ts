@@ -27,6 +27,21 @@ router.patch("/cancel/room/bookings", bookingController.cancelBookRoom);
 
 router.get("/cancel/orders", bookingController.cancelOrder);
 
-router.post("/book/room", bookingController.bookRoom);
+router.post(
+  "/book/room",
+  [
+    body("bookHotel.maxPerson")
+      .isNumeric()
+      .custom((value, { req }) => {
+        if (value >= 6) {
+          throw new Error("Allowed Person must be less than 6");
+        }
+        return true;
+      }),
+    body("bookHotel.inDate").isDate().withMessage("In Date must be a Date"),
+    body("bookHotel.outDate").isDate().withMessage("Out Date must be a Date"),
+  ],
+  bookingController.bookRoom
+);
 
 export default router;

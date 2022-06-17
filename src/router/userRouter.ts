@@ -1,4 +1,5 @@
 import * as express from "express";
+import { body } from "express-validator";
 import { UserController } from "../controller/UserController";
 
 const router = express.Router();
@@ -20,13 +21,29 @@ router.get("/view/room/:id", userController.viewRooms);
 
 router.get("/get/user/tour/:take", userController.paginateTour);
 
-router.post("/mail/admin", userController.sendMail);
+router.post(
+  "/mail/admin",
+  [
+    body("name").isAlpha().withMessage("Invalid Name"),
+    body("email").isEmail().withMessage("Invalid email"),
+    body("message").isAlphanumeric().withMessage("Invalid message"),
+  ],
+  userController.sendMail
+);
 
 router.get("/all/category", userController.getCategory);
 
 router.get("/search/tour/:location", userController.searchTourData);
 
-router.post("/review", userController.postReview);
+router.post(
+  "/review",
+  [
+    body("name").isAlpha().withMessage("Invalid Name"),
+    body("rating").isNumeric().isInt({ min: 1 }).withMessage("Invalid Rating"),
+    body("comment").isAlpha().withMessage("Invalid Comment"),
+  ],
+  userController.postReview
+);
 
 router.get("/review/:id", userController.viewReview);
 

@@ -10,6 +10,7 @@ import { getAllRooms, getHotels, getRoomById } from "../services/hotelService";
 import { getTourById, getTours } from "../services/tourService";
 import * as mailService from "../services/mailService";
 import { getRating, getReviewById, saveReview } from "../services/reviewService";
+import { validationResult } from "express-validator";
 
 export class UserController {
   getAllTours = async (req, res: express.Response, next) => {
@@ -153,6 +154,10 @@ export class UserController {
     let mail = req.body.email;
     let name = req.body.name;
     let messageData = req.body.message;
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     await saveMail(name, mail, messageData);
     const message = {
       from: req.body.email,
@@ -202,12 +207,17 @@ export class UserController {
     res: express.Response,
     next
   ) => {
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
+
     const tourExist = await getTourById({ tour_id: req.body.tour });
     const name = req.body.name;
     const rating = req.body.rating;
     const review = req.body.comment;
     const tour = tourExist;
-    await saveReview(name,rating,review,tour);
+    const response = await saveReview(name,rating,review,tour);
   
     return res.status(200).json("Review Posted Successfully");
   };

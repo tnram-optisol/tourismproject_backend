@@ -55,4 +55,5 @@ AppDataSource.initialize()
   })
   .catch((error) => console.log(error));
 
+//for testing uncomment this line
 module.exports = app.listen(8080)

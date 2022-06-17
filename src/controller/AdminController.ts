@@ -1,4 +1,5 @@
 import * as express from "express";
+import { validationResult } from "express-validator";
 import { CATEGORY } from "../constants/db.constants";
 import { findAllUser, getAllRequests } from "../services/adminService";
 import {
@@ -49,8 +50,11 @@ export class AdminController {
     let role = req.body.role;
     let status = req.body.status;
     let property = req.body.property;
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     let sequence = await getSequence("MAX(banner.sequence)", "max");
-
     if (role === 2) {
       let result = await updateHotelStatus(property, { status: status });
       return res.status(200).json(result);
@@ -66,7 +70,10 @@ export class AdminController {
   storeSequence = async (req: express.Request, res: express.Response, next) => {
     let tourId = req.body.tourId;
     let role = parseInt(req.headers.role[1]);
-    console.log("running");
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     let banners = await getBannerById({
       tour: {
         tour_id: tourId,
@@ -81,6 +88,16 @@ export class AdminController {
   };
 
   saveCategory = async (req: express.Request, res: express.Response, next) => {
+    const fileType = ["image/jpg", "image/png", "image/jpeg"];
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
+    if (fileType.findIndex((e) => e === req.file.mimetype) === -1) {
+      return res
+        .status(400)
+        .send("Upload a image file with jpg /jpeg/png extensions");
+    }
     let name = req.body.category_name;
     let image = "http://localhost:8080/uploads/" + req.file.filename;
     let result = await addCategory(name, image);
@@ -95,6 +112,10 @@ export class AdminController {
     let package_name = req.body.tour.tour;
     let category = req.body.tour.category;
     let closed_on = new Date(req.body.tour.closedOn);
+    const validationErr = validationResult(req);
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
     const result = await updateCategory(package_name, category, closed_on);
     return res.status(200).json("Data Updated");
   };

@@ -8,7 +8,10 @@ const authController = new AuthController();
 
 router.post(
   "/signin",
-  [body("email").isEmail(), body("password").isLength({ min: 6 })],
+  [
+    body("email").isEmail().withMessage("Invalid Email"),
+    body("password").isLength({ min: 6 }),
+  ],
   authController.userLogin
 );
 

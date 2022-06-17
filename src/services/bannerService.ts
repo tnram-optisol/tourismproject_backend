@@ -37,4 +37,13 @@ export const saveBanner = async (tour:Tours,sequence:number) => {
     newBanner.sequence = sequence
     const resultData = await BANNER_DATA.save(newBanner);
     return resultData;
-  };
+};
+  
+export const getBannerByTourId =async (id:number) => {
+  const resultData = await BANNER_DATA.findOneBy({
+    tour: {
+      tour_id:id
+    }
+  });
+  return resultData;
+};
