@@ -40,6 +40,6 @@ export class HotelOrders{
 
     @ManyToOne(()=>BookRoom,{nullable:false,eager:true})
     @JoinColumn({name:'book_id'})
-    bookRoom :BookRoom
+    bookRoom:BookRoom
 
 }

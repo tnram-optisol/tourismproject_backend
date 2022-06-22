@@ -15,9 +15,9 @@ router.patch(
   "/update",
   upload.single("file"),
   [
-    body("startDate").isDate().withMessage("Start Date must be a Date"),
-    body("endDate").isDate().withMessage("End Date must be a Date"),
-    body("description").isAlpha().withMessage("Description must be a Text"),
+    body("startDate").exists().withMessage("Start Date must be a Date"),
+    body("endDate").exists().withMessage("End Date must be a Date"),
+    body("description").exists().withMessage("Description must be a Text"),
     body("cost").isNumeric().withMessage("Tour cost Must be a Number"),
   ],
   tourController.updateTour
@@ -35,11 +35,11 @@ router.post(
     body("from").isAlpha().withMessage("From location must be a Text"),
     body("to").isAlpha().withMessage("To location must be a Text"),
     body("license")
-      .isAlphanumeric()
+      .exists()
       .withMessage("Tour license Must be a Alpha-Numeric"),
     body("description").isAlpha().withMessage("Description must be a Text"),
-    body("startDate").isDate().withMessage("Start Date must be a Date"),
-    body("endDate").isDate().withMessage("End Date must be a Date"),
+    body("startDate").exists().withMessage("Start Date must be a Date"),
+    body("endDate").exists().withMessage("End Date must be a Date"),
     body("days").isNumeric().withMessage("Tour days Must be a Number"),
     body("cost").isNumeric().withMessage("Tour cost Must be a Number"),
   ],

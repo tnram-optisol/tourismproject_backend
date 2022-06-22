@@ -21,7 +21,7 @@ router.post(
 
 router.get("/bookings/:user", bookingController.viewBookings);
 
-router.patch("/cancel/bookings", bookingController.cancelBookTour);
+router.patch("/cancel/tour/bookings", bookingController.cancelBookTour);
 
 router.patch("/cancel/room/bookings", bookingController.cancelBookRoom);
 

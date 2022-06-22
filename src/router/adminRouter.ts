@@ -45,7 +45,7 @@ router.post(
   [
     body("tour.tour").isNumeric().withMessage("Must be a Number"),
     body("tour.category").isArray({min:1}).withMessage("Category Must be a Array"),
-    body("tour.closedOn").isDate().withMessage("Closed on Must be a Date"),
+    body("tour.closedOn").exists().withMessage("Closed on Must be a Date"),
   ],
   adminController.updateTourCategory
 );

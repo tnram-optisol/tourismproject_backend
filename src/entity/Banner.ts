@@ -20,5 +20,6 @@ export class Banner {
   sequence: number;
 
   @Column({ nullable: true, type: 'float' })
-  rating:number
+  rating: number;
+  
 }

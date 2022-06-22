@@ -26,7 +26,7 @@ router.post(
   [
     body("name").isAlpha().withMessage("Invalid Name"),
     body("email").isEmail().withMessage("Invalid email"),
-    body("message").isAlphanumeric().withMessage("Invalid message"),
+    body("message").exists().withMessage("Invalid message"),
   ],
   userController.sendMail
 );
@@ -40,7 +40,7 @@ router.post(
   [
     body("name").isAlpha().withMessage("Invalid Name"),
     body("rating").isNumeric().isInt({ min: 1 }).withMessage("Invalid Rating"),
-    body("comment").isAlpha().withMessage("Invalid Comment"),
+    body("comment").exists().withMessage("Invalid Comment"),
   ],
   userController.postReview
 );

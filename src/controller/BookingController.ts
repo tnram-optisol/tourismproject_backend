@@ -38,6 +38,9 @@ export class BookingController {
     next
   ) => {
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    if (userId === 0) {
+      return res.status(400).json("Please check your credentials");
+    }
     const response = await cancelTourBooking(userId, req.body.bookId);
     if (response) {
       return res.status(200).json("Booking Removed Successfully");
@@ -51,6 +54,9 @@ export class BookingController {
     next
   ) => {
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    if (userId === 0) {
+      return res.status(400).json("Please check your credentials");
+    }
     const response = await cancelRoomBooking(userId, req.body.bookId);
     if (response) {
       return res.status(200).json("Booking Removed Successfully");
@@ -60,6 +66,9 @@ export class BookingController {
 
   viewBookings = async (req: express.Request, res: express.Response, next) => {
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    if (userId === 0) {
+      return res.status(400).json("Please check your credentials");
+    }
     let tourBooking = await viewTourBooking(userId);
     let roomBooking = await viewRoomBooking(userId);
     if (tourBooking || roomBooking) {
@@ -71,6 +80,9 @@ export class BookingController {
 
   cancelOrder = async (req: express.Request, res: express.Response, next) => {
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    if (userId === 0) {
+      return res.status(400).json("Please check your credentials");
+    }
     let orderExist = await cancelTourOrder(userId);
     if (orderExist) {
       return res.status(200).json(orderExist);

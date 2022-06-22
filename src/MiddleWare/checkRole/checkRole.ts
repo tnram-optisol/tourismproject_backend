@@ -6,6 +6,12 @@ export const checkRole = (req, res: express.Response, next) => {
   if (ROLES.findIndex((el) => el === role) !== -1) {
     return next();
   } else {
-    return res.status(401).send("Access Denied ");
+    return res.status(401).json({
+      errors: [
+        {
+          msg: "Access Denied....",
+        },
+      ],
+    });
   }
 };
