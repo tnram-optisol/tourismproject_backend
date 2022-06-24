@@ -17,33 +17,56 @@ export const updateBanner = async (banner: Banner) => {
   return resultData;
 };
 
-export const getSequence = async (query,as) => {
+export const getSequence = async (query, as) => {
   const resultData = await BANNER_DATA.createQueryBuilder("banner")
-    .select(query,as)
+    .select(query, as)
     .getRawOne();
   return resultData;
 };
 
-export const getTourBanner = async (query,as) => {
+export const getTourBanner = async (query, as) => {
   const resultData = await BANNER_DATA.createQueryBuilder("banner")
-    .innerJoinAndSelect(query,as)
+    .innerJoinAndSelect(query, as)
     .getMany();
   return resultData;
 };
 
-export const saveBanner = async (tour:Tours,sequence:number) => {
-    const newBanner = BANNER
-    newBanner.tour = tour,
-    newBanner.sequence = sequence
-    const resultData = await BANNER_DATA.save(newBanner);
-    return resultData;
+export const saveBanner = async (tour: Tours, sequence: number) => {
+  const newBanner = BANNER;
+  (newBanner.tour = tour), (newBanner.sequence = sequence);
+  const resultData = await BANNER_DATA.save(newBanner);
+  return resultData;
 };
-  
-export const getBannerByTourId =async (id:number) => {
+
+export const getBannerByTourId = async (id: number) => {
   const resultData = await BANNER_DATA.findOneBy({
     tour: {
-      tour_id:id
-    }
+      tour_id: id,
+    },
+  });
+  return resultData;
+};
+
+export const getAdminBannerData = async (
+  take: number,
+  skip: number,
+  search?: any
+) => {
+  if (search !== "") {
+    const resultData = await BANNER_DATA.createQueryBuilder("banner")
+      .innerJoinAndSelect("banner.tour", "tour")
+      .where("tour.package_name ILIKE :q", {
+        q: `%${search}%`,
+      })
+      .getMany();
+    return resultData;
+  }
+  const resultData = await BANNER_DATA.findAndCount({
+    take: take,
+    skip: skip,
+    order: {
+      sequence: "ASC",
+    },
   });
   return resultData;
 };

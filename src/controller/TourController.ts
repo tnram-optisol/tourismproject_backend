@@ -117,18 +117,10 @@ export class TourController {
   };
 
   getAdminTourOrders = async (req, res: express.Response, next) => {
-    let roleId = parseInt(req.headers.role[0]);
-    let name = req.body.name;
-    let tourId = req.body.tourId;
-    let tourExist = await getTours({
-      package_name: req.body.name,
-      user: {
-        id: req.body.user,
-      },
-    });
+    const roleId = parseInt(req.headers.role[0]);
     //update Request
-    if (tourExist) {
-      let myTour = await getAllTourOrders();
+    const myTour = await getAllTourOrders();
+    if (myTour) {
       return res.status(200).json(myTour);
     }
     return res.status(400).json("Not Found Tour");

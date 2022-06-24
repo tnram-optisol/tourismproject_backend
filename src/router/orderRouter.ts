@@ -1,10 +1,8 @@
 import * as express from "express";
 import { OrderController } from "../controller/OrderController";
 
-
 const router = express.Router();
-const orderController = new OrderController()
-
+const orderController = new OrderController();
 
 router.get("/view/order/:id", orderController.viewOrder);
 

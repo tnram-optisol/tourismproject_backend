@@ -15,7 +15,7 @@ require("dotenv").config();
 const bookData = AppDataSource.getRepository(BookTour);
 const tourOrder = AppDataSource.getRepository(TourOrders);
 const bookRoomData = AppDataSource.getRepository(BookRoom);
-const hotelOrderData = AppDataSource.getRepository(HotelOrders)
+const hotelOrderData = AppDataSource.getRepository(HotelOrders);
 
 const stripe = new Stripe(`${process.env.STRIPE_KEY}`, {
   apiVersion: "2020-08-27",
@@ -79,8 +79,8 @@ const storeOrder = async (charge) => {
     payment: false,
   });
   const roomBooking = await bookRoomData.findOneBy({
-    room:{
-      room_name:package_name
+    room: {
+      room_name: package_name,
     },
     user: {
       id: +userId,
@@ -107,12 +107,12 @@ const storeOrder = async (charge) => {
     bookingExist.payment = true;
 
     await AppDataSource.manager.save(bookingExist);
-  }else{
+  } else {
     const hotelOrder = new HotelOrders();
     hotelOrder.order_id = idempotencyKey;
     hotelOrder.paymentStatus = true;
     hotelOrder.paymentId = charge.payment_intent;
-    hotelOrder.orderStatus =true;
+    hotelOrder.orderStatus = true;
     hotelOrder.orderdAt = new Date();
     hotelOrder.bookRoom = roomBooking;
     hotelOrder.discount = +discount;
@@ -120,12 +120,12 @@ const storeOrder = async (charge) => {
     hotelOrder.purchased_by = charge.customer_details.name;
     hotelOrder.email = charge.customer_details.email;
     hotelOrder.description = `Purchased ${roomBooking.room.room_name}`;
-    hotelOrder.orderCost = charge.amount_total/100
+    hotelOrder.orderCost = charge.amount_total / 100;
 
     await hotelOrderData.save(hotelOrder);
 
-    roomBooking.payment =true;
-    await bookRoomData.save(roomBooking)
+    roomBooking.payment = true;
+    await bookRoomData.save(roomBooking);
   }
 };
 

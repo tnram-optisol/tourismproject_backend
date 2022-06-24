@@ -37,7 +37,17 @@ export const tourOrderId = async (bookId: number, userId: number) => {
   return result;
 };
 
-export const getAllTourOrders = async () => {
+export const getAllTourOrders = async (take?: number, skip?: number) => {
+  if (take !== 0 || skip !== 0) {
+    const result = await TOUR_ORDER_DATA.findAndCount({
+      order: {
+        orderdAt: "DESC",
+      },
+      take: take,
+      skip: skip,
+    });
+    return result;
+  }
   const result = await TOUR_ORDER_DATA.find({
     order: {
       orderdAt: "DESC",
@@ -46,7 +56,17 @@ export const getAllTourOrders = async () => {
   return result;
 };
 
-export const getAllHotelOrders = async () => {
+export const getAllHotelOrders = async (take?: number, skip?: number) => {
+  if (take !== 0 || skip !== 0) {
+    const result = await HOTEL_ORDER_DATA.findAndCount({
+      order: {
+        orderdAt: "DESC",
+      },
+      take: take,
+      skip: skip,
+    });
+    return result;
+  }
   const result = await HOTEL_ORDER_DATA.find({
     order: {
       orderdAt: "DESC",

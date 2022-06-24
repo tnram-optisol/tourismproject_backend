@@ -1,9 +1,8 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
-import { CATEGORY } from "../constants/db.constants";
 import { findAllUser, getAllRequests } from "../services/adminService";
 import {
-  getAllBanner,
+  getAdminBannerData,
   getBannerById,
   getSequence,
   saveBanner,
@@ -36,9 +35,12 @@ export class AdminController {
   };
 
   viewAllBanner = async (req: express.Request, res: express.Response, next) => {
-    let banners = await getAllBanner({});
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const search = req.query.search ? req.query.search : "";
+    let banners = await getAdminBannerData(limit, skip, search);
     let role = parseInt(req.headers.role[1]);
-    console.log("running");
     if (banners) {
       return res.status(200).json(banners);
     }
@@ -125,7 +127,16 @@ export class AdminController {
     res: express.Response,
     next
   ) => {
-    const result = await getAllCategory();
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const query = req.query
+      ? {
+          take: limit,
+          skip: skip,
+        }
+      : {};
+    const result = await getAllCategory(query);
     return res.status(200).json(result);
   };
 
@@ -143,7 +154,11 @@ export class AdminController {
 
   getAllUsers = async (req: express.Request, res: express.Response, next) => {
     const category_id = +req.params.id;
-    const result = await findAllUser();
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const search = req.query.search ? req.query.search : "";
+    const result = await findAllUser(search, limit, skip);
     return res.status(200).json(result);
   };
 
@@ -152,10 +167,13 @@ export class AdminController {
     res: express.Response,
     next
   ) => {
-    const tourOrder = await getAllTourOrders();
-    const hotelOrder = await getAllHotelOrders();
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const tourOrder = await getAllTourOrders(limit, skip);
+    const hotelOrder = await getAllHotelOrders(limit, skip);
     if (tourOrder || hotelOrder) {
-      return res.status(200).json([...tourOrder, ...hotelOrder]);
+      return res.status(200).json({ tourOrder, hotelOrder });
     }
     return res.status(401).json("No Orders Exists");
   };

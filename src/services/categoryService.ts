@@ -1,3 +1,4 @@
+import { FindManyOptions } from "typeorm";
 import {
   BANNER_DATA,
   CATEGORY,
@@ -10,7 +11,11 @@ import { Category } from "../entity/Category";
 import { Tours } from "../entity/Tours";
 import { getRating } from "./reviewService";
 
-export const getAllCategory = async () => {
+export const getAllCategory = async (query?: any) => {
+  if (query) {
+    const resultData = await CATEGORY_DATA.findAndCount(query);
+    return resultData;
+  }
   const resultData = await CATEGORY_DATA.find();
   return resultData;
 };

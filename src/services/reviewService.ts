@@ -7,7 +7,7 @@ import {
 import { Tours } from "../entity/Tours";
 import { getBannerByTourId } from "./bannerService";
 
-export const getRating = async (id) => {
+export const getRating = async (id:number) => {
   const result = await TOUR_REVIEW_DATA.createQueryBuilder("review")
     .select(" CAST(AVG(review.rating) AS DECIMAL(16,1))", "rating")
     .where("review.tour_id=:id", { id })
