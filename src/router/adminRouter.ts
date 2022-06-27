@@ -8,7 +8,9 @@ const router = express.Router();
 
 const adminController = new AdminController();
 
-router.get("/request", adminController.viewAllRequests);
+router.get("/request/tour", adminController.viewAllTourRequests);
+
+router.get("/request/hotel", adminController.viewAllHotelRequests);
 
 router.patch(
   "/approve",
@@ -32,7 +34,11 @@ router.patch(
 router.post(
   "/category",
   upload.single("file"),
-  [body("category_name").isAlpha().withMessage(" Category_name Must be a text")],
+  [
+    body("category_name")
+      .isAlpha()
+      .withMessage(" Category_name Must be a text"),
+  ],
   adminController.saveCategory
 );
 
@@ -44,7 +50,9 @@ router.post(
   "/update",
   [
     body("tour.tour").isNumeric().withMessage("Must be a Number"),
-    body("tour.category").isArray({min:1}).withMessage("Category Must be a Array"),
+    body("tour.category")
+      .isArray({ min: 1 })
+      .withMessage("Category Must be a Array"),
     body("tour.closedOn").exists().withMessage("Closed on Must be a Date"),
   ],
   adminController.updateTourCategory
@@ -52,6 +60,8 @@ router.post(
 
 router.get("/all/users", adminController.getAllUsers);
 
-router.get("/all/orders", adminController.adminAllOrders);
+router.get("/tour/orders", adminController.adminAllTourOrders);
+
+router.get("/hotel/orders", adminController.adminAllHotelOrders);
 
 export default router;
