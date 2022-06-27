@@ -7,8 +7,32 @@ import {
   ROOM_DATA,
 } from "../constants/db.constants";
 
-export const hotelRequests = async (query) => {
-  const resultData = await HOTEL_DATA.findBy(query);
+export const hotelRequests = async (
+  limit: number,
+  skip: number,
+  search?: any
+) => {
+  if (search === "") {
+    const resultData = await HOTEL_DATA.findAndCount({
+      where: {
+        status: false,
+      },
+      take: limit,
+      skip: skip,
+    });
+    return resultData;
+  }
+  const resultData = await HOTEL_DATA.createQueryBuilder("hotel")
+    .innerJoinAndSelect("hotel.user", "user")
+    .innerJoinAndSelect("user.role", "role")
+    .where(
+      "hotel.hotel_name ILIKE :q or hotel.hotel_license ILIKE :q or user.name ILIKE :q",
+      {
+        q: `%${search}%`,
+      }
+    )
+    .where("hotel.status =:status", { status: false })
+    .getMany();
   return resultData;
 };
 

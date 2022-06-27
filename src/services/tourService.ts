@@ -5,8 +5,32 @@ import {
   TOUR_DATA,
 } from "../constants/db.constants";
 
-export const tourRequests = async (query) => {
-  const resultData = await TOUR_DATA.findBy(query);
+export const tourRequests = async (
+  limit: number,
+  skip: number,
+  search?: any
+) => {
+  if (search === "") {
+    const resultData = await TOUR_DATA.findAndCount({
+      where: {
+        status: false,
+      },
+      take: limit,
+      skip: skip,
+    });
+    return resultData;
+  }
+  const resultData = await TOUR_DATA.createQueryBuilder("tour")
+    .innerJoinAndSelect("tour.user", "user")
+    .innerJoinAndSelect("user.role", "role")
+    .where(
+      "tour.package_name ILIKE :q or user.name ILIKE :q",
+      {
+        q: `%${search}%`,
+      }
+  )
+    .where("tour.status =:status",{status:false})
+    .getMany();
   return resultData;
 };
 

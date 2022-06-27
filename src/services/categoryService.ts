@@ -67,3 +67,26 @@ export const getTourCategoryData = async (categoryId) => {
     .getMany();
   return resultData;
 };
+
+export const getAdminCategoryData = async (
+  take: number,
+  skip: number,
+  search?: any
+) => {
+  if (search !== "") {
+    const resultData = await CATEGORY_DATA.createQueryBuilder("category")
+      .where("category.category ILIKE :q", {
+        q: `%${search}%`,
+      })
+      .getMany();
+    return resultData;
+  }
+  const resultData = await CATEGORY_DATA.findAndCount({
+    take: take,
+    skip: skip,
+    order: {
+      id: "ASC",
+    },
+  });
+  return resultData;
+};

@@ -16,8 +16,28 @@ export const tourRefundData = async (bookId, userId, payment?) => {
   return result;
 };
 
-export const viewTourBooking = async (userId) => {
-  const result = await BOOK_TOUR_DATA.find({
+export const viewTourBooking = async (
+  userId: number,
+  take: number,
+  skip: number
+) => {
+  if (take !== 0 || skip !== 0) {
+    const result = await BOOK_TOUR_DATA.findAndCount({
+      where: {
+        user: {
+          id: userId,
+        },
+        book_status: true,
+      },
+      order: {
+        book_id: "DESC",
+      },
+      take: take,
+      skip: skip,
+    });
+    return result;
+  }
+  const result = await BOOK_TOUR_DATA.findAndCount({
     where: {
       user: {
         id: userId,
@@ -31,8 +51,28 @@ export const viewTourBooking = async (userId) => {
   return result;
 };
 
-export const viewRoomBooking = async (userId) => {
-  const result = await BOOK_ROOM_DATA.find({
+export const viewRoomBooking = async (
+  userId: number,
+  take: number,
+  skip: number
+) => {
+  if (take !== 0 || skip !== 0) {
+    const result = await BOOK_ROOM_DATA.findAndCount({
+      where: {
+        user: {
+          id: userId,
+        },
+        book_status: true,
+      },
+      order: {
+        id: "DESC",
+      },
+      take: take,
+      skip: skip,
+    });
+    return result;
+  }
+  const result = await BOOK_ROOM_DATA.findAndCount({
     where: {
       user: {
         id: userId,
@@ -66,7 +106,7 @@ export const cancelRoomBooking = async (userId, bookId) => {
     user: {
       id: userId,
     },
-    id:bookId,
+    id: bookId,
     payment: false,
   });
   if (bookingExist) {
