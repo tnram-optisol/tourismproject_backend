@@ -10,7 +10,7 @@ import {
 } from "../services/bannerService";
 import {
   addCategory,
-  getAllCategory,
+  getAdminCategoryData,
   removeCategory,
   updateCategory,
 } from "../services/categoryService";
@@ -19,21 +19,40 @@ import { getAllHotelOrders, getAllTourOrders } from "../services/orderService";
 import { tourRequests, updateTourData } from "../services/tourService";
 
 export class AdminController {
-  viewAllRequests = async (
+  viewAllHotelRequests = async (
     req: express.Request,
     res: express.Response,
     next
   ) => {
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const search = req.query.search ? req.query.search : "";
     let requests = await getAllRequests({ status: false });
     let role = parseInt(req.headers.role[1]);
     if (requests) {
-      let hotel = await hotelRequests({ status: false });
-      let tour = await tourRequests({ status: false });
-      return res.status(200).json({ hotel, tour });
+      let hotel = await hotelRequests(limit, skip, search);
+      return res.status(200).json({ hotel });
     }
     return res.status(400).json("Not Found Any Requests");
   };
-
+  viewAllTourRequests = async (
+    req: express.Request,
+    res: express.Response,
+    next
+  ) => {
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const search = req.query.search ? req.query.search : "";
+    let requests = await getAllRequests({ status: false });
+    let role = parseInt(req.headers.role[1]);
+    if (requests) {
+      let tour = await tourRequests(limit, skip, search);
+      return res.status(200).json({ tour });
+    }
+    return res.status(400).json("Not Found Any Requests");
+  };
   viewAllBanner = async (req: express.Request, res: express.Response, next) => {
     const limit = req.query.limit ? +req.query.limit : 0;
     const page = req.query.page ? +req.query.page : 0;
@@ -130,13 +149,8 @@ export class AdminController {
     const limit = req.query.limit ? +req.query.limit : 0;
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
-    const query = req.query
-      ? {
-          take: limit,
-          skip: skip,
-        }
-      : {};
-    const result = await getAllCategory(query);
+    const search = req.query.search ? req.query.search : "";
+    const result = await getAdminCategoryData(limit, skip, search);
     return res.status(200).json(result);
   };
 
@@ -162,7 +176,7 @@ export class AdminController {
     return res.status(200).json(result);
   };
 
-  adminAllOrders = async (
+  adminAllTourOrders = async (
     req: express.Request,
     res: express.Response,
     next
@@ -170,10 +184,25 @@ export class AdminController {
     const limit = req.query.limit ? +req.query.limit : 0;
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
-    const tourOrder = await getAllTourOrders(limit, skip);
-    const hotelOrder = await getAllHotelOrders(limit, skip);
-    if (tourOrder || hotelOrder) {
-      return res.status(200).json({ tourOrder, hotelOrder });
+    const search = req.query.search ? req.query.search : "";
+    const tourOrder = await getAllTourOrders(limit, skip, search);
+    if (tourOrder) {
+      return res.status(200).json({ tourOrder });
+    }
+    return res.status(401).json("No Orders Exists");
+  };
+  adminAllHotelOrders = async (
+    req: express.Request,
+    res: express.Response,
+    next
+  ) => {
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const search = req.query.search ? req.query.search : "";
+    const hotelOrder = await getAllHotelOrders(limit, skip, search);
+    if (hotelOrder) {
+      return res.status(200).json({ hotelOrder });
     }
     return res.status(401).json("No Orders Exists");
   };
