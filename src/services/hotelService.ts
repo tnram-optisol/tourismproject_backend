@@ -1,3 +1,5 @@
+import { AppDataSource } from "../data-source";
+import { Notification } from "../entity/Notification";
 import {
   HOTEL,
   HOTEL_DATA,
@@ -75,6 +77,13 @@ export const addNewHotel = async (hotelData) => {
   hotel.status = false;
   console.log(hotel.user);
   await HOTEL_DATA.save(hotel);
+
+  const message = `${hotel.user.name} has raised request to add ${hotel.hotel_name}`;
+  const type = "request_hotel";
+  const newNotification = new Notification();
+  newNotification.notification = message;
+  newNotification.type = type;
+  await AppDataSource.manager.save(newNotification);
 
   const request = REQUEST;
   request.status = false;

@@ -7,6 +7,7 @@ import { Roles } from "../entity/Roles";
 import { validationResult } from "express-validator";
 import { USER_DATA } from "../constants/db.constants";
 import { findUser, signUp } from "../services/authService";
+import { createNewNotification } from "../services/notificationService";
 
 export class AuthController {
   userLogin = async (req: express.Request, res: express.Response, next) => {
@@ -58,6 +59,11 @@ export class AuthController {
       let password = await this.createPassword(req.body.user.password);
       try {
         const result = await signUp(req.body.user, password);
+        const message = `${
+          result.name
+        } has joined us on ${new Date().toLocaleDateString()}`;
+        const type = "user";
+        const notification = await createNewNotification(message, type);
         return res.status(200).json("Successfully Registered");
       } catch (err) {
         return res.status(500).json("Server Error");
@@ -83,7 +89,7 @@ export class AuthController {
         role: role,
       },
       "secretKey",
-      { expiresIn: "1h" }
+      { expiresIn: "2h" }
     );
     return token;
   };

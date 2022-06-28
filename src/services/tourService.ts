@@ -4,6 +4,8 @@ import {
   TOUR,
   TOUR_DATA,
 } from "../constants/db.constants";
+import { AppDataSource } from "../data-source";
+import { Notification } from "../entity/Notification";
 
 export const tourRequests = async (
   limit: number,
@@ -23,13 +25,10 @@ export const tourRequests = async (
   const resultData = await TOUR_DATA.createQueryBuilder("tour")
     .innerJoinAndSelect("tour.user", "user")
     .innerJoinAndSelect("user.role", "role")
-    .where(
-      "tour.package_name ILIKE :q or user.name ILIKE :q",
-      {
-        q: `%${search}%`,
-      }
-  )
-    .where("tour.status =:status",{status:false})
+    .where("tour.package_name ILIKE :q or user.name ILIKE :q", {
+      q: `%${search}%`,
+    })
+    .where("tour.status =:status", { status: false })
     .getMany();
   return resultData;
 };
@@ -61,6 +60,13 @@ export const addNewTour = async (tourData) => {
   tour.cost = tourData.cost;
   tour.user = tourData.user;
   await TOUR_DATA.save(tour);
+
+  const message = `${tour.user.name} has raised request to add ${tour.package_name}`;
+  const type = "request_tour";
+  const newNotification = new Notification();
+  newNotification.notification = message;
+  newNotification.type = type;
+  await AppDataSource.manager.save(newNotification);
 
   let request = REQUEST;
   request.status = false;

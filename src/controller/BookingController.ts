@@ -16,6 +16,7 @@ import {
   viewRoomBooking,
   viewTourBooking,
 } from "../services/bookService";
+import { createNewNotification } from "../services/notificationService";
 import { cancelRoomOrder, cancelTourOrder } from "../services/orderService";
 
 export class BookingController {

@@ -6,6 +6,7 @@ import { BookTour } from "../entity/BookTour";
 import { Category } from "../entity/Category";
 import { HotelOrders } from "../entity/HotelOrders";
 import { Hotels } from "../entity/Hotels";
+import { Notification } from "../entity/Notification";
 import { Requests } from "../entity/Requests";
 import { Roles } from "../entity/Roles";
 import { Rooms } from "../entity/Rooms";
@@ -30,6 +31,8 @@ export const HOTEL_ORDER_DATA = AppDataSource.getRepository(HotelOrders);
 export const ROOM_DATA = AppDataSource.getRepository(Rooms);
 export const TOUR_REVIEW_DATA = AppDataSource.getRepository(TourReview);
 export const ADMIN_MAIL_DATA = AppDataSource.getRepository(AdminMail);
+export const ADMIN_NOTIFICATION_DATA =
+  AppDataSource.getRepository(Notification);
 
 export const BANNER = new Banner();
 export const CATEGORY = new Category();
@@ -43,3 +46,4 @@ export const TOUR = new Tours();
 export const REQUEST = new Requests();
 export const TOUR_REVIEW = new TourReview();
 export const ADMIN_MAIL = new AdminMail();
+export const ADMIN_NOTIFICATION = new Notification();

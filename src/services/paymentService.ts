@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from "uuid";
 import { BOOK_TOUR_DATA, TOUR_ORDER_DATA } from "../constants/db.constants";
 import { tourRefundData } from "./bookService";
 import { tourOrderRefund } from "./orderService";
+import { Notification } from "../entity/Notification";
+import { AppDataSource } from "../data-source";
 
 require("dotenv").config();
 
@@ -73,11 +75,19 @@ export const createRefund = async (orderExist, bookingExist) => {
       payment_intent: orderExist.paymentId,
     })
     .then(async (result) => {
+      const message = `${bookingExist.user.name} has canceled Booking for ${bookingExist.tour.package_name}`;
+      const type = "tour_order";
+
+      const newNotification = new Notification();
+      newNotification.notification = message;
+      newNotification.type = type;
+
+      await AppDataSource.manager.save(newNotification);
       orderExist.orderStatus = false;
       bookingExist.book_status = false;
       await BOOK_TOUR_DATA.save(bookingExist);
       await TOUR_ORDER_DATA.save(orderExist);
-      return orderExist
+      return orderExist;
     })
     .catch((err) => {
       console.log(err);

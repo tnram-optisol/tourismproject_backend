@@ -8,6 +8,8 @@ import { AppDataSource } from "../data-source";
 import { TourOrders } from "../entity/TourOrders";
 import { BookRoom } from "../entity/BookRoom";
 import { HotelOrders } from "../entity/HotelOrders";
+import { createNewNotification } from "../services/notificationService";
+import { Notification } from "../entity/Notification";
 const router = express.Router();
 
 require("dotenv").config();
@@ -107,6 +109,15 @@ const storeOrder = async (charge) => {
     bookingExist.payment = true;
 
     await AppDataSource.manager.save(bookingExist);
+
+    const message = `${bookingExist.user.name} has booked ${bookingExist.tour.package_name}`;
+    const type = "tour_order";
+
+    const newNotification = new Notification();
+    newNotification.notification = message;
+    newNotification.type = type;
+
+    await AppDataSource.manager.save(newNotification);
   } else {
     const hotelOrder = new HotelOrders();
     hotelOrder.order_id = idempotencyKey;
@@ -126,6 +137,15 @@ const storeOrder = async (charge) => {
 
     roomBooking.payment = true;
     await bookRoomData.save(roomBooking);
+
+    const message = `${roomBooking.user.name} has booked ${roomBooking.room.room_name}`;
+    const type = "hotel_order";
+
+    const newNotification = new Notification();
+    newNotification.notification = message;
+    newNotification.type = type;
+
+    await AppDataSource.manager.save(newNotification);
   }
 };
 

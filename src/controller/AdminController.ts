@@ -15,6 +15,10 @@ import {
   updateCategory,
 } from "../services/categoryService";
 import { hotelRequests, updateHotelStatus } from "../services/hotelService";
+import {
+  discardNotification,
+  getAllNotification,
+} from "../services/notificationService";
 import { getAllHotelOrders, getAllTourOrders } from "../services/orderService";
 import { tourRequests, updateTourData } from "../services/tourService";
 
@@ -203,6 +207,29 @@ export class AdminController {
     const hotelOrder = await getAllHotelOrders(limit, skip, search);
     if (hotelOrder) {
       return res.status(200).json({ hotelOrder });
+    }
+    return res.status(401).json("No Orders Exists");
+  };
+  adminAllNotifications = async (
+    req: express.Request,
+    res: express.Response,
+    next
+  ) => {
+    const notification = await getAllNotification();
+    if (notification) {
+      return res.status(200).json({ notification });
+    }
+    return res.status(401).json("No Orders Exists");
+  };
+  deleteNotification = async (
+    req: express.Request,
+    res: express.Response,
+    next
+  ) => {
+    const id = +req.params.id;
+    const notification = await discardNotification(id);
+    if (notification) {
+      return res.status(200).json({ notification });
     }
     return res.status(401).json("No Orders Exists");
   };

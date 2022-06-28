@@ -64,4 +64,8 @@ router.get("/tour/orders", adminController.adminAllTourOrders);
 
 router.get("/hotel/orders", adminController.adminAllHotelOrders);
 
+router.get("/notification", adminController.adminAllNotifications);
+
+router.delete("/notification/:id", adminController.deleteNotification);
+
 export default router;

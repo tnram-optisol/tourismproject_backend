@@ -38,8 +38,8 @@ router.post(
         }
         return true;
       }),
-    body("bookHotel.inDate").isDate().withMessage("In Date must be a Date"),
-    body("bookHotel.outDate").isDate().withMessage("Out Date must be a Date"),
+    body("bookHotel.inDate").exists().withMessage("In Date must be a Date"),
+    body("bookHotel.outDate").exists().withMessage("Out Date must be a Date"),
   ],
   bookingController.bookRoom
 );
