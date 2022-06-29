@@ -80,7 +80,7 @@ export class BookingController {
       return res.status(400).json("Please check your credentials");
     }
     let tourBooking = await viewTourBooking(userId, limit, skip);
-    let roomBooking = await viewRoomBooking(userId,limit, skip);
+    let roomBooking = await viewRoomBooking(userId, limit, skip);
     if (tourBooking || roomBooking) {
       return res.status(200).json({ tourBooking, roomBooking });
     }

@@ -1,13 +1,13 @@
 import * as express from "express";
 import * as bcrypt from "bcrypt";
-import { AppDataSource } from "../data-source";
-import { Users } from "../entity/User";
 import * as jwt from "jsonwebtoken";
-import { Roles } from "../entity/Roles";
+import * as crypto from "crypto";
 import { validationResult } from "express-validator";
-import { USER_DATA } from "../constants/db.constants";
-import { findUser, signUp } from "../services/authService";
+import * as otpGenerator from "otp-generator";
+
+import { findUser, signUp, updateUser } from "../services/authService";
 import { createNewNotification } from "../services/notificationService";
+import * as mailService from "../services/mailService";
 
 export class AuthController {
   userLogin = async (req: express.Request, res: express.Response, next) => {
@@ -69,6 +69,56 @@ export class AuthController {
         return res.status(500).json("Server Error");
       }
     }
+  };
+
+  generateOtp = async (req: express.Request, res: express.Response, next) => {
+    const validationErr = validationResult(req);
+    let userExist = await findUser({ email: req.body.email });
+
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
+    if (!userExist) {
+      return res.status(400).json("Email Id doesn't Exists");
+    }
+    const otp = crypto.randomInt(100000, 999999);
+    const response = await updateUser(userExist, "", otp);
+    const message = {
+      from: "admin@abc.com",
+      to: userExist.email,
+      subject: "Query Mail ",
+      html: `<h1>Password Reset Mail.</h1><br>
+            <p>Please enter the otp ${otp} to reset password</p><br>
+            <p>Don't disclose or share this otp with any one</p>`,
+    };
+    mailService.transport.sendMail(message, (err, info) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json("Try Again");
+      }
+      return res
+        .status(200)
+        .json(`Mail Sent Successfully at ${userExist.email}`);
+    });
+  };
+
+  resetPassword = async (req: express.Request, res: express.Response, next) => {
+    const validationErr = validationResult(req);
+    let userExist = await findUser({ email: req.body.email });
+    if (!validationErr.isEmpty()) {
+      return res.status(400).json({ errors: validationErr.array() });
+    }
+    if (!userExist) {
+      return res.status(400).json("Email Id doesn't Exists");
+    }
+    if (+req.body.otp !== userExist.otp) {
+      console.log(userExist.otp);
+      return res.status(400).json("Invalid OTP");
+    }
+    const newPassword = await this.createPassword(req.body.password);
+    const response = await updateUser(userExist, newPassword);
+
+    return res.status(200).json("Password Updated!! Login to Check!!");
   };
 
   createPassword = async (password: string) => {

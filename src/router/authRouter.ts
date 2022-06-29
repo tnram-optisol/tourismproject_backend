@@ -28,4 +28,34 @@ router.post(
   authController.userSignUp
 );
 
+router.post(
+  "/get-otp",
+  [body("email").isEmail().withMessage("Invalid Email")],
+  authController.generateOtp
+);
+
+router.post(
+  "/reset-pass",
+  [
+    body("email").isEmail().withMessage("Invalid Email"),
+    body("otp").isNumeric().withMessage("Otp must be a number"),
+    body("password")
+      .exists()
+      .isLength({ min: 6 })
+      .withMessage("Reset Password required"),
+    body("cnf_password")
+      .exists()
+      .custom((value, { req }) => {
+        if (
+          value !== req.body.password &&
+          value.length !== req.body.password.length
+        ) {
+          throw new Error("Both Password Field must same");
+        }
+        return true;
+      }),
+  ],
+  authController.resetPassword
+);
+
 export default router;
