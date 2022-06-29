@@ -157,6 +157,17 @@ export const bookNewRoom = async (newRoom) => {
   return response;
 };
 
+export const hotelRefundData = async (bookId: number, userId: number) => {
+  const result = await BOOK_ROOM_DATA.findOneBy({
+    id: bookId,
+    user: {
+      id: userId,
+    },
+    payment: true,
+  });
+  return result;
+};
+
 function calcTotalDays(inDate: string, outDate: string): number {
   let checkIn = new Date(inDate).getDate();
   let checkOut = new Date(outDate).getDate();

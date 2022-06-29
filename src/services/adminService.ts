@@ -34,7 +34,7 @@ export const findAllUser = async (
       .getMany();
     return response;
   }
-  if (take !== 0 && skip !== 0) {
+  if (take !== 0 || skip !== 0) {
     const response = USER_DATA.findAndCount({
       take: take,
       skip: skip,

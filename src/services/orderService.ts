@@ -1,6 +1,6 @@
 import { HOTEL_ORDER_DATA, TOUR_ORDER_DATA } from "../constants/db.constants";
 
-export const tourOrderRefund = async (bookId, userId) => {
+export const tourOrderRefund = async (bookId: number, userId: number) => {
   const result = await TOUR_ORDER_DATA.findOneBy({
     bookTour: {
       book_id: bookId,
@@ -91,7 +91,7 @@ export const getAllHotelOrders = async (
       .innerJoinAndSelect("orders.bookRoom", "bookRoom")
       .innerJoinAndSelect("bookRoom.room", "room")
       .where(
-        "orders.order_id ILIKE :q or orderss.description ILIKE :q or orders.purchased_by ILIKE :q or orders.email ILIKE :q",
+        "orders.order_id ILIKE :q or orders.description ILIKE :q or orders.purchased_by ILIKE :q or orders.email ILIKE :q",
         { q: `%${search}%` }
       )
       .getMany();
@@ -144,6 +144,19 @@ export const cancelRoomOrder = async (
     },
     take: take,
     skip: limit,
+  });
+  return result;
+};
+
+export const hotelOrderRefund = async (bookId: number, userId: number) => {
+  const result = await HOTEL_ORDER_DATA.findOneBy({
+    bookRoom: {
+      id: bookId,
+    },
+    user: {
+      id: userId,
+    },
+    orderStatus: true,
   });
   return result;
 };

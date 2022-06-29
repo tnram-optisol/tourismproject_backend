@@ -2,11 +2,20 @@ import Stripe from "stripe";
 import * as express from "express";
 import "dotenv/config";
 import { v4 as uuidv4 } from "uuid";
-import { BOOK_TOUR_DATA, TOUR_ORDER_DATA } from "../constants/db.constants";
+import {
+  BOOK_ROOM_DATA,
+  BOOK_TOUR_DATA,
+  HOTEL_ORDER_DATA,
+  TOUR_ORDER_DATA,
+} from "../constants/db.constants";
 import { tourRefundData } from "./bookService";
 import { tourOrderRefund } from "./orderService";
 import { Notification } from "../entity/Notification";
 import { AppDataSource } from "../data-source";
+import { BookRoom } from "../entity/BookRoom";
+import { HotelOrders } from "../entity/HotelOrders";
+import { BookTour } from "../entity/BookTour";
+import { TourOrders } from "../entity/TourOrders";
 
 require("dotenv").config();
 
@@ -19,13 +28,17 @@ const stripe = new Stripe(`${process.env.STRIPE_KEY}`, {
 export const createCheckOustSession = async (product) => {
   const generateCoupon = await stripe.coupons.create({
     percent_off: product.discount,
-    name: "VIPCOUPON",
     currency: "inr",
     duration: "forever",
   });
-  const promotionCode = await stripe.promotionCodes.create({
-    coupon: generateCoupon.id,
-  });
+  try {
+    const promotionCode = await stripe.promotionCodes.create({
+      coupon: generateCoupon.id,
+      code: "TOUR20",
+    });
+  } catch (err) {
+    console.log(err);
+  }
 
   const session = await stripe.checkout.sessions.create({
     metadata: {
@@ -69,7 +82,10 @@ export const createCheckOustSession = async (product) => {
   return session;
 };
 
-export const createRefund = async (orderExist, bookingExist) => {
+export const createRefund = async (
+  orderExist: TourOrders,
+  bookingExist: BookTour
+) => {
   return stripe.refunds
     .create({
       payment_intent: orderExist.paymentId,
@@ -87,6 +103,34 @@ export const createRefund = async (orderExist, bookingExist) => {
       bookingExist.book_status = false;
       await BOOK_TOUR_DATA.save(bookingExist);
       await TOUR_ORDER_DATA.save(orderExist);
+      return orderExist;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const createHotelRefund = async (
+  orderExist: HotelOrders,
+  bookingExist: BookRoom
+) => {
+  return stripe.refunds
+    .create({
+      payment_intent: orderExist.paymentId,
+    })
+    .then(async (result) => {
+      const message = `${bookingExist.user.name} has canceled Booking for ${bookingExist.room.room_name}`;
+      const type = "hotel_order";
+
+      const newNotification = new Notification();
+      newNotification.notification = message;
+      newNotification.type = type;
+
+      await AppDataSource.manager.save(newNotification);
+      orderExist.orderStatus = false;
+      bookingExist.book_status = false;
+      await BOOK_ROOM_DATA.save(bookingExist);
+      await HOTEL_ORDER_DATA.save(orderExist);
       return orderExist;
     })
     .catch((err) => {

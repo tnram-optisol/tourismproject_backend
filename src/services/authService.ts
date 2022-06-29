@@ -18,3 +18,25 @@ export const signUp = async (userData, password) => {
   const response = await USER_DATA.save(user);
   return response;
 };
+
+export const updateUser = async (
+  userData: Users,
+  password?: string,
+  otp?: number
+) => {
+  const user_id: number = userData.id;
+  if (password !== "") {
+    const response = await USER_DATA.update(user_id, {
+      password: password,
+      otp: 0,
+    });
+    return response;
+  }
+  if (otp > 0) {
+    const response = await USER_DATA.update(user_id, {
+      otp: otp,
+    });
+    return response;
+  }
+  return null;
+};
