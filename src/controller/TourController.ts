@@ -1,7 +1,12 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
 import { getAllTourOrders } from "../services/orderService";
-import { addNewTour, getTours, updateTourData } from "../services/tourService";
+import {
+  addNewTour,
+  deletePackage,
+  getTours,
+  updateTourData,
+} from "../services/tourService";
 
 export class TourController {
   addTour = async (req, res: express.Response, next) => {
@@ -122,6 +127,14 @@ export class TourController {
     const myTour = await getAllTourOrders();
     if (myTour) {
       return res.status(200).json(myTour);
+    }
+    return res.status(400).json("Not Found Tour");
+  };
+  removePackage = async (req: express.Request, res: express.Response, next) => {
+    const id = +req.params.id;
+    const myTour = await deletePackage(id);
+    if (myTour) {
+      return res.status(200).json("Tour Package Deleted");
     }
     return res.status(400).json("Not Found Tour");
   };

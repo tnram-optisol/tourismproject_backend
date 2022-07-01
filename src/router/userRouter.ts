@@ -49,6 +49,8 @@ router.get("/review/:id", userController.viewReview);
 
 router.get("/rating/:id", userController.viewRating);
 
+router.get("/user/profile", userController.viewProfile);
+
 export default router;
 
 //for testing purpose

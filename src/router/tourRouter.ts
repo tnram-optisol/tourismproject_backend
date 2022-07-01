@@ -3,8 +3,6 @@ import { body } from "express-validator";
 import { TourController } from "../controller/TourController";
 import upload from "../services/fileUpload";
 
-import * as tourService from "../services/tourService";
-
 const router = express.Router();
 const tourController = new TourController();
 
@@ -25,6 +23,8 @@ router.patch(
 
 //PAGINATIOn
 router.get("/:take", tourController.tourPagination);
+
+router.delete("/package/:id", tourController.removePackage);
 
 //POST REQUEST
 router.post(

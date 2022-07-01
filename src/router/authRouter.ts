@@ -59,3 +59,6 @@ router.post(
 );
 
 export default router;
+
+//for testing
+export { authController };

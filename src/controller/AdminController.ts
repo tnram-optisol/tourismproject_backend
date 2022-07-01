@@ -34,8 +34,8 @@ export class AdminController {
     const search = req.query.search ? req.query.search : "";
     let requests = await getAllRequests({ status: false });
     let role = parseInt(req.headers.role[1]);
-    if (requests) {
-      let hotel = await hotelRequests(limit, skip, search);
+    let hotel = await hotelRequests(limit, skip, search);
+    if (hotel) {
       return res.status(200).json({ hotel });
     }
     return res.status(400).json("Not Found Any Requests");
@@ -51,8 +51,8 @@ export class AdminController {
     const search = req.query.search ? req.query.search : "";
     let requests = await getAllRequests({ status: false });
     let role = parseInt(req.headers.role[1]);
-    if (requests) {
-      let tour = await tourRequests(limit, skip, search);
+    let tour = await tourRequests(limit, skip, search);
+    if (tour) {
       return res.status(200).json({ tour });
     }
     return res.status(400).json("Not Found Any Requests");

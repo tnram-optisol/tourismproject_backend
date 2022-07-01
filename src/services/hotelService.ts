@@ -22,7 +22,10 @@ export const hotelRequests = async (
       take: limit,
       skip: skip,
     });
-    return resultData;
+    if (resultData[1] > 0) {
+      return resultData;
+    }
+    return null;
   }
   const resultData = await HOTEL_DATA.createQueryBuilder("hotel")
     .innerJoinAndSelect("hotel.user", "user")
@@ -35,7 +38,10 @@ export const hotelRequests = async (
     )
     .where("hotel.status =:status", { status: false })
     .getMany();
-  return resultData;
+  if (resultData.length > 0) {
+    return resultData;
+  }
+  return null;
 };
 
 export const updateHotelStatus = async (id: number, query) => {

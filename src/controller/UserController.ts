@@ -15,6 +15,7 @@ import {
   saveReview,
 } from "../services/reviewService";
 import { validationResult } from "express-validator";
+import { findUser } from "../services/authService";
 
 export class UserController {
   getAllTours = async (req, res: express.Response, next) => {
@@ -202,6 +203,11 @@ export class UserController {
     }
 
     const tourExist = await getTourById({ tour_id: req.body.tour });
+
+    if (!tourExist) {
+      return res.status(400).json("Please Check Tour Id");
+    }
+
     const name = req.body.name;
     const rating = req.body.rating;
     const review = req.body.comment;
@@ -209,5 +215,17 @@ export class UserController {
     const response = await saveReview(name, rating, review, tour);
 
     return res.status(200).json("Review Posted Successfully");
+  };
+
+  viewProfile = async (req: express.Request, res: express.Response, next) => {
+    const id = req.headers.user[0] ? +req.headers.user[0] : 0;
+    if (id === 0) {
+      return res.status(400).json("No Profile Exists");
+    }
+    const query = {
+      id: id,
+    };
+    const userData = await findUser(query);
+    return res.status(200).json(userData);
   };
 }

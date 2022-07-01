@@ -95,10 +95,10 @@ export class BookingController {
     if (userId === 0) {
       return res.status(400).json("Please check your credentials");
     }
-    let orderExist = await cancelTourOrder(userId, limit, skip);
+    let tourOrder = await cancelTourOrder(userId, limit, skip);
     let hotelOrder = await cancelRoomOrder(userId, limit, page);
-    if (orderExist) {
-      return res.status(200).json(orderExist);
+    if (tourOrder || hotelOrder) {
+      return res.status(200).json({ tourOrder, hotelOrder });
     }
     return res.status(400).json("No order Canceled");
   };

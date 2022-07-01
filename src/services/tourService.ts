@@ -1,4 +1,5 @@
 import {
+  BANNER_DATA,
   REQUEST,
   REQUEST_DATA,
   TOUR,
@@ -20,7 +21,10 @@ export const tourRequests = async (
       take: limit,
       skip: skip,
     });
-    return resultData;
+    if (resultData[1] > 0) {
+      return resultData;
+    }
+    return null;
   }
   const resultData = await TOUR_DATA.createQueryBuilder("tour")
     .innerJoinAndSelect("tour.user", "user")
@@ -30,7 +34,10 @@ export const tourRequests = async (
     })
     .where("tour.status =:status", { status: false })
     .getMany();
-  return resultData;
+   if (resultData.length > 0) {
+     return resultData;
+   }
+   return null;
 };
 
 export const updateTourData = async (id: number, query) => {
@@ -77,4 +84,18 @@ export const addNewTour = async (tourData) => {
 export const getTourById = async (query) => {
   const resultData = await TOUR_DATA.findOneBy(query);
   return resultData;
+};
+
+export const deletePackage = async (id: number) => {
+  const tourData = await TOUR_DATA.findOneBy({
+    tour_id: id,
+  });
+  const bannerData = await BANNER_DATA.findOneBy({
+    tour: {
+      tour_id: id,
+    },
+  });
+  const removeBanner = await BANNER_DATA.remove(bannerData);
+  const response = await TOUR_DATA.remove(tourData);
+  return response;
 };

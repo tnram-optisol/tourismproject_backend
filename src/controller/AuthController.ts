@@ -3,7 +3,6 @@ import * as bcrypt from "bcrypt";
 import * as jwt from "jsonwebtoken";
 import * as crypto from "crypto";
 import { validationResult } from "express-validator";
-import * as otpGenerator from "otp-generator";
 
 import { findUser, signUp, updateUser } from "../services/authService";
 import { createNewNotification } from "../services/notificationService";
@@ -86,9 +85,10 @@ export class AuthController {
     const message = {
       from: "admin@abc.com",
       to: userExist.email,
-      subject: "Query Mail ",
+      subject: "Password Reset ",
       html: `<h1>Password Reset Mail.</h1><br>
             <p>Please enter the otp ${otp} to reset password</p><br>
+            <p>Will expire in five minutes from now.</p><br>
             <p>Don't disclose or share this otp with any one</p>`,
     };
     mailService.transport.sendMail(message, (err, info) => {
