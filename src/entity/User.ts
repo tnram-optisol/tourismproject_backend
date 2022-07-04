@@ -28,9 +28,6 @@ export class Users {
   @Column({ unique: true })
   contact: string;
 
-  @Column({ default: 0 })
-  otp: number;
-
   @ManyToOne(() => Roles, { nullable: false, eager: true })
   @JoinColumn({ name: "role_id" })
   role: Roles;

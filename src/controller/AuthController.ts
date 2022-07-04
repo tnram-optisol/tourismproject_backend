@@ -7,6 +7,7 @@ import { validationResult } from "express-validator";
 import { findUser, signUp, updateUser } from "../services/authService";
 import { createNewNotification } from "../services/notificationService";
 import * as mailService from "../services/mailService";
+import { clearOtpData, createNewOTP, findOtp } from "../services/OtpService";
 
 export class AuthController {
   userLogin = async (req: express.Request, res: express.Response, next) => {
@@ -48,7 +49,6 @@ export class AuthController {
   userSignUp = async (req: express.Request, res: express.Response, next) => {
     const validationErr = validationResult(req);
     let userExist = await findUser({ email: req.body.user.email });
-
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
     }
@@ -81,7 +81,9 @@ export class AuthController {
       return res.status(400).json("Email Id doesn't Exists");
     }
     const otp = crypto.randomInt(100000, 999999);
-    const response = await updateUser(userExist, "", otp);
+    const date = new Date();
+    const expiresIn = date.getTime() + 5 * 60 * 1000;
+    const response = await createNewOTP(userExist.email, otp, expiresIn);
     const message = {
       from: "admin@abc.com",
       to: userExist.email,
@@ -104,20 +106,17 @@ export class AuthController {
 
   resetPassword = async (req: express.Request, res: express.Response, next) => {
     const validationErr = validationResult(req);
-    let userExist = await findUser({ email: req.body.email });
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
     }
-    if (!userExist) {
-      return res.status(400).json("Email Id doesn't Exists");
-    }
-    if (+req.body.otp !== userExist.otp) {
-      console.log(userExist.otp);
-      return res.status(400).json("Invalid OTP");
+    let otpExist = await findOtp(req.body.otp);
+    if (!otpExist) {
+      return res.status(400).json("Invalid OTP or OTP Expired");
     }
     const newPassword = await this.createPassword(req.body.password);
+    let userExist = await findUser({ email: otpExist.email });
     const response = await updateUser(userExist, newPassword);
-
+    const deleteOtp = await clearOtpData(userExist.email);
     return res.status(200).json("Password Updated!! Login to Check!!");
   };
 

@@ -37,7 +37,6 @@ router.post(
 router.post(
   "/reset-pass",
   [
-    body("email").isEmail().withMessage("Invalid Email"),
     body("otp").isNumeric().withMessage("Otp must be a number"),
     body("password")
       .exists()

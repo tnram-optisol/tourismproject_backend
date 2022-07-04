@@ -10,6 +10,7 @@ import { Category } from "./entity/Category";
 import { HotelOrders } from "./entity/HotelOrders";
 import { Hotels } from "./entity/Hotels";
 import { Notification } from "./entity/Notification";
+import { Otp } from "./entity/Otp";
 import { Requests } from "./entity/Requests";
 import { Roles } from "./entity/Roles";
 import { Rooms } from "./entity/Rooms";
@@ -45,6 +46,7 @@ export const AppDataSource = new DataSource({
     Category,
     TourCategory,
     Notification,
+    Otp,
   ],
   migrations: [],
   subscribers: [],
