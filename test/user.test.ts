@@ -13,6 +13,7 @@ import {
 
 chai.use(chaiHttp);
 
+
 const token = "";
 
 describe("Require a controller", () => {
@@ -158,34 +159,6 @@ describe("Must get a value on Call", () => {
       .catch((err) => {
         console.log(err);
       });
-  });
-});
-
-describe("Send message to admin", () => {
-  it("Must send message to admin", (done) => {
-    chai
-      .request(app)
-      .post("/mail/admin")
-      .send({
-        name: "abc",
-        email: "abc@example.com",
-        message: "test",
-      })
-      .end(function (res, err) {
-        if (err) {
-          console.log(err);
-        }
-        expect(res).to.have.status(200);
-        done();
-      });
-    afterEach(async () => {
-      const mailExist = await ADMIN_MAIL_DATA.findOneBy({
-        user_message: "test",
-      });
-      ADMIN_MAIL_DATA.delete(mailExist).then((res) => {
-        console.log("deleted");
-      });
-    });
   });
 });
 

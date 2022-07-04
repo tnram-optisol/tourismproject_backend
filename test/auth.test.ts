@@ -19,7 +19,7 @@ describe("Auth Controller imports", () => {
 describe("Register Check", () => {
   const user = {
     name: "test",
-    email: "test@abc.com",
+    email: "test1@abc.com",
     password: "test123",
     contact: "8765432109",
     place: "london",
@@ -29,13 +29,12 @@ describe("Register Check", () => {
     chai
       .request(app)
       .post("/signup")
-      .send(user)
-      .end(function (res, err) {
+      .send({ user })
+      .end((err, res) => {
         if (err) {
-          console.log(err);
+          console.log("err", err);
         }
         expect(res).to.have.status(200);
-        expect(res.body).to.be.json;
         done();
       });
   });
@@ -47,11 +46,11 @@ describe("Login Check", () => {
       .request(app)
       .post("/signin")
       .send({
-        email: "test@abc.com",
+        email: "test1@abc.com",
         password: "test123",
       })
       .end(function (err, res) {
-        expect(err).to.have.status(200);
+        expect(res).to.have.status(200);
         expect(res.body).to.be.a("object");
         expect(res.body).to.have.a.property("token");
         done();
@@ -62,7 +61,7 @@ describe("Login Check", () => {
       });
     afterEach(async () => {
       const user = await USER_DATA.findOneBy({
-        email: "test@abc.com",
+        email: "test1@abc.com",
       });
       USER_DATA.remove(user).then((res) => {
         console.log("Removed user -- test@abc.com");
