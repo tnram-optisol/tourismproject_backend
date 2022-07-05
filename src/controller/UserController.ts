@@ -1,25 +1,27 @@
 import * as express from "express";
-import { saveMail } from "../services/adminService";
-import { getAllBanner, getTourBanner } from "../services/bannerService";
-import {
-  getAllCategory,
-  getCategoryLocation,
-  getTourCategoryData,
-} from "../services/categoryService";
-import { getAllRooms, getHotels, getRoomById } from "../services/hotelService";
-import { getTourById, getTours } from "../services/tourService";
-import * as mailService from "../services/mailService";
-import {
-  getRating,
-  getReviewById,
-  saveReview,
-} from "../services/reviewService";
 import { validationResult } from "express-validator";
-import { findUser } from "../services/authService";
+
+
+import { TourService } from "../services/tourService";
+import * as mailService from "../services/mailService";
+import { BannerService } from "../services/bannerService";
+import { AuthService } from "../services/authService";
+import { AdminService } from "../services/adminService";
+import { ReviewService } from "../services/reviewService";
+import { CategoryService } from "../services/categoryService";
+import { HotelService } from "../services/hotelService";
+
+const authService = new AuthService();
+const adminService = new AdminService();
+const bannerService = new BannerService();
+const reviewService = new ReviewService();
+const tourService = new TourService();
+const hotelService = new HotelService(); 
+const categoryService = new CategoryService(); 
 
 export class UserController {
   getAllTours = async (req, res: express.Response, next) => {
-    let tourExist = await getTours({ status: true });
+    let tourExist = await tourService.getTours({ status: true });
     if (tourExist) {
       return res.status(200).json(tourExist);
     }
@@ -27,7 +29,7 @@ export class UserController {
   };
 
   getHomeTour = async (req, res: express.Response, next) => {
-    let bannerExist = await getAllBanner({
+    let bannerExist = await bannerService.getAllBanner({
       where: {
         tour: {
           status: true,
@@ -45,7 +47,7 @@ export class UserController {
 
   viewTour = async (req, res: express.Response, next) => {
     let tour_id = +req.params.id;
-    let tourExist = await getTourById({ tour_id: tour_id });
+    let tourExist = await tourService.getTourById({ tour_id: tour_id });
     if (tourExist) {
       return res.status(200).json(tourExist);
     }
@@ -53,7 +55,7 @@ export class UserController {
   };
 
   viewHotel = async (req, res: express.Response, next) => {
-    let hotelExist = await getHotels({ status: true });
+    let hotelExist = await hotelService.getHotels({ status: true });
     if (hotelExist) {
       return res.status(200).json(hotelExist);
     }
@@ -62,7 +64,7 @@ export class UserController {
 
   viewAllRooms = async (req, res: express.Response, next) => {
     let hotelId = +req.params.id;
-    let roomExist = await getAllRooms({
+    let roomExist = await hotelService.getAllRooms({
       where: {
         hotel: {
           hotel_id: hotelId,
@@ -77,7 +79,7 @@ export class UserController {
 
   viewRooms = async (req, res: express.Response, next) => {
     let roomId = +req.params.id;
-    let roomExist = await getRoomById({
+    let roomExist = await hotelService.getRoomById({
       room_id: roomId,
     });
     if (roomExist) {
@@ -87,7 +89,7 @@ export class UserController {
   };
 
   getCategory = async (req: express.Request, res: express.Response, next) => {
-    const result = await getAllCategory();
+    const result = await categoryService.getAllCategory();
     return res.status(200).json(result);
   };
 
@@ -97,17 +99,17 @@ export class UserController {
     next
   ) => {
     const location = req.params.location;
-    const result = await getCategoryLocation({
+    const result = await categoryService.getCategoryLocation({
       category: location,
     });
     let categoryId = result.id;
     if (categoryId > 0) {
-      let tourExist = await getTourCategoryData(categoryId);
+      let tourExist = await categoryService.getTourCategoryData(categoryId);
       if (tourExist) {
         return res.status(200).json(tourExist);
       }
     } else {
-      let tourExist = await getTourBanner("banner.tour", "tours");
+      let tourExist = await bannerService.getTourBanner("banner.tour", "tours");
       if (tourExist) {
         return res.status(200).json(tourExist);
       }
@@ -120,7 +122,7 @@ export class UserController {
     //const skip= (take-1) > 1 ? (take-1):0
     const skip = (parseInt(req.params.take) - 1) * ITEMS_PER_PAGE;
     console.log(take, skip);
-    let totalTour = await getAllBanner({
+    let totalTour = await bannerService.getAllBanner({
       where: {
         tour: {
           status: true,
@@ -138,12 +140,12 @@ export class UserController {
   filterByCategory = async (req, res: express.Response, next) => {
     let categoryId = req.params.category;
     if (categoryId > 0) {
-      let tourExist = await getTourCategoryData(categoryId);
+      let tourExist = await categoryService.getTourCategoryData(categoryId);
       if (tourExist) {
         return res.status(200).json(tourExist);
       }
     } else {
-      let tourExist = await getTourBanner("banner.tour", "tours");
+      let tourExist = await bannerService.getTourBanner("banner.tour", "tours");
       if (tourExist) {
         return res.status(200).json(tourExist);
       }
@@ -160,7 +162,7 @@ export class UserController {
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
     }
-    await saveMail(name, mail, messageData);
+    await adminService.saveMail(name, mail, messageData);
     const message = {
       from: req.body.email,
       to: "admin@abc.com",
@@ -178,8 +180,8 @@ export class UserController {
 
   viewRating = async (req: express.Request, res: express.Response, next) => {
     const id = +req.params.id;
-    const tourExist = await getTourById({ tour_id: id });
-    const viewReview = await getRating(id);
+    const tourExist = await tourService.getTourById({ tour_id: id });
+    const viewReview = await reviewService.getRating(id);
     if (viewReview) {
       return res.status(200).json(viewReview);
     }
@@ -188,8 +190,8 @@ export class UserController {
 
   viewReview = async (req: express.Request, res: express.Response, next) => {
     const id = +req.params.id;
-    const tourExist = await getTourById({ tour_id: id });
-    const viewReview = await getReviewById(tourExist);
+    const tourExist = await tourService.getTourById({ tour_id: id });
+    const viewReview = await reviewService.getReviewById(tourExist);
     if (viewReview) {
       return res.status(200).json(viewReview);
     }
@@ -202,7 +204,7 @@ export class UserController {
       return res.status(400).json({ errors: validationErr.array() });
     }
 
-    const tourExist = await getTourById({ tour_id: req.body.tour });
+    const tourExist = await tourService.getTourById({ tour_id: req.body.tour });
 
     if (!tourExist) {
       return res.status(400).json("Please Check Tour Id");
@@ -212,7 +214,7 @@ export class UserController {
     const rating = req.body.rating;
     const review = req.body.comment;
     const tour = tourExist;
-    const response = await saveReview(name, rating, review, tour);
+    const response = await reviewService.saveReview(name, rating, review, tour);
 
     return res.status(200).json("Review Posted Successfully");
   };
@@ -225,7 +227,7 @@ export class UserController {
     const query = {
       id: id,
     };
-    const userData = await findUser(query);
+    const userData = await authService.findUser(query);
     return res.status(200).json(userData);
   };
 }

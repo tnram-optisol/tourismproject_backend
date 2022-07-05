@@ -1,17 +1,15 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
-import {
-  addNewHotel,
-  addNewRoom,
-  getAllRooms,
-  getHotels,
-} from "../services/hotelService";
+
+import { HotelService } from "../services/hotelService";
 import { getAllHotelOrders } from "../services/orderService";
+
+const hotelService = new HotelService()
 
 export class HotelController {
   viewHotel = async (req, res: express.Response, next) => {
     let userId = req.headers.user[0];
-    let hotelExist = await getHotels({
+    let hotelExist = await hotelService.getHotels({
       user: {
         id: parseInt(userId),
       },
@@ -25,7 +23,7 @@ export class HotelController {
   viewAllRooms = async (req, res: express.Response, next) => {
     let hotelId = +req.params.id;
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-    let roomExist = await getAllRooms({
+    let roomExist = await hotelService.getAllRooms({
       where: {
         hotel: {
           hotel_id: hotelId,
@@ -59,14 +57,14 @@ export class HotelController {
       hotel_id: req.body.hotel_id,
     };
 
-    await addNewRoom(room);
+    await hotelService.addNewRoom(room);
     res.status(200).json("Saved Successfull");
   };
 
   addHotel = async (req, res: express.Response, next) => {
     const fileType = ["image/jpg", "image/png", "image/jpeg"];
     let roleId = parseInt(req.headers.role[0]);
-    let hotelExist = await getHotels({
+    let hotelExist = await hotelService.getHotels({
       hotel_name: req.body.hotel.name,
       user: req.body.hotel.user.id,
     });
@@ -92,7 +90,7 @@ export class HotelController {
         image: "http://localhost:8080/uploads/" + req.file.filename,
         user: req.body.user.id,
       };
-      await addNewHotel(hotel);
+      await hotelService.addNewHotel(hotel);
 
       res.status(200).json("Saved Hotel Data / Awaiting Confirmation");
     }

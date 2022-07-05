@@ -1,26 +1,20 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
-import { findAllUser, getAllRequests } from "../services/adminService";
-import {
-  getAdminBannerData,
-  getBannerById,
-  getSequence,
-  saveBanner,
-  updateBanner,
-} from "../services/bannerService";
-import {
-  addCategory,
-  getAdminCategoryData,
-  removeCategory,
-  updateCategory,
-} from "../services/categoryService";
-import { hotelRequests, updateHotelStatus } from "../services/hotelService";
-import {
-  discardNotification,
-  getAllNotification,
-} from "../services/notificationService";
+
+import { AdminService } from "../services/adminService";
+import { BannerService } from "../services/bannerService";
+import { CategoryService } from "../services/categoryService";
+import { HotelService } from "../services/hotelService";
+import { NotificationService } from "../services/notificationService";
 import { getAllHotelOrders, getAllTourOrders } from "../services/orderService";
-import { tourRequests, updateTourData } from "../services/tourService";
+import { TourService } from "../services/tourService";
+
+const adminService = new AdminService();
+const notificationService = new NotificationService();
+const bannerService = new BannerService();
+const tourService = new TourService();
+const hotelService = new HotelService();
+const categoryService = new CategoryService();
 
 export class AdminController {
   viewAllHotelRequests = async (
@@ -32,9 +26,9 @@ export class AdminController {
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
     const search = req.query.search ? req.query.search : "";
-    let requests = await getAllRequests({ status: false });
+    let requests = await adminService.getAllRequests({ status: false });
     let role = parseInt(req.headers.role[1]);
-    let hotel = await hotelRequests(limit, skip, search);
+    let hotel = await hotelService.hotelRequests(limit, skip, search);
     if (hotel) {
       return res.status(200).json({ hotel });
     }
@@ -49,9 +43,9 @@ export class AdminController {
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
     const search = req.query.search ? req.query.search : "";
-    let requests = await getAllRequests({ status: false });
+    let requests = await adminService.getAllRequests({ status: false });
     let role = parseInt(req.headers.role[1]);
-    let tour = await tourRequests(limit, skip, search);
+    let tour = await tourService.tourRequests(limit, skip, search);
     if (tour) {
       return res.status(200).json({ tour });
     }
@@ -62,7 +56,7 @@ export class AdminController {
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
     const search = req.query.search ? req.query.search : "";
-    let banners = await getAdminBannerData(limit, skip, search);
+    let banners = await bannerService.getAdminBannerData(limit, skip, search);
     let role = parseInt(req.headers.role[1]);
     if (banners) {
       return res.status(200).json(banners);
@@ -79,13 +73,20 @@ export class AdminController {
     if (!validationErr.isEmpty) {
       return res.status(400).json({ errors: validationErr.array() });
     }
-    let sequence = await getSequence("MAX(banner.sequence)", "max");
+    let sequence = await bannerService.getSequence(
+      "MAX(banner.sequence)",
+      "max"
+    );
     if (role === 2) {
-      let result = await updateHotelStatus(property, { status: status });
+      let result = await hotelService.updateHotelStatus(property, {
+        status: status,
+      });
       return res.status(200).json(result);
     } else if (role === 3) {
-      let result = await updateTourData(property, { status: status });
-      await saveBanner(property, sequence.max + 1);
+      let result = await tourService.updateTourData(property, {
+        status: status,
+      });
+      await bannerService.saveBanner(property, sequence.max + 1);
       return res.status(200).json(result);
     } else {
       return res.status(400).json("Not Found Users Requests");
@@ -99,14 +100,14 @@ export class AdminController {
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
     }
-    let banners = await getBannerById({
+    let banners = await bannerService.getBannerById({
       tour: {
         tour_id: tourId,
       },
     });
     if (banners) {
       banners.sequence = +req.body.sequence;
-      await updateBanner(banners);
+      await bannerService.updateBanner(banners);
       return res.status(200).json(banners);
     }
     return res.status(400).json("Not Found Any Requests");
@@ -125,7 +126,7 @@ export class AdminController {
     }
     let name = req.body.category_name;
     let image = "http://localhost:8080/uploads/" + req.file.filename;
-    let result = await addCategory(name, image);
+    let result = await categoryService.addCategory(name, image);
     return res.status(200).json(result);
   };
 
@@ -141,7 +142,11 @@ export class AdminController {
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
     }
-    const result = await updateCategory(package_name, category, closed_on);
+    const result = await categoryService.updateCategory(
+      package_name,
+      category,
+      closed_on
+    );
     return res.status(200).json("Data Updated");
   };
 
@@ -154,7 +159,11 @@ export class AdminController {
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
     const search = req.query.search ? req.query.search : "";
-    const result = await getAdminCategoryData(limit, skip, search);
+    const result = await categoryService.getAdminCategoryData(
+      limit,
+      skip,
+      search
+    );
     return res.status(200).json(result);
   };
 
@@ -164,7 +173,7 @@ export class AdminController {
     next
   ) => {
     const category_id = +req.params.id;
-    const result = await removeCategory({
+    const result = await categoryService.removeCategory({
       id: category_id,
     });
     return res.status(200).json(result);
@@ -176,7 +185,7 @@ export class AdminController {
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
     const search = req.query.search ? req.query.search : "";
-    const result = await findAllUser(search, limit, skip);
+    const result = await adminService.findAllUser(search, limit, skip);
     return res.status(200).json(result);
   };
 
@@ -215,7 +224,7 @@ export class AdminController {
     res: express.Response,
     next
   ) => {
-    const notification = await getAllNotification();
+    const notification = await notificationService.getAllNotification();
     if (notification) {
       return res.status(200).json({ notification });
     }
@@ -227,7 +236,7 @@ export class AdminController {
     next
   ) => {
     const id = +req.params.id;
-    const notification = await discardNotification(id);
+    const notification = await notificationService.discardNotification(id);
     if (notification) {
       return res.status(200).json({ notification });
     }

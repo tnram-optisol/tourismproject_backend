@@ -1,13 +1,6 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
-import {
-  BOOKROOM,
-  BOOKTOUR,
-  BOOK_ROOM_DATA,
-  BOOK_TOUR_DATA,
-  TOUR_DATA,
-  TOUR_ORDER_DATA,
-} from "../constants/db.constants";
+
 import {
   bookNewRoom,
   cancelRoomBooking,
@@ -16,7 +9,6 @@ import {
   viewRoomBooking,
   viewTourBooking,
 } from "../services/bookService";
-import { createNewNotification } from "../services/notificationService";
 import { cancelRoomOrder, cancelTourOrder } from "../services/orderService";
 
 export class BookingController {

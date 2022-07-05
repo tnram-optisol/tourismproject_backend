@@ -1,12 +1,9 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
 import { getAllTourOrders } from "../services/orderService";
-import {
-  addNewTour,
-  deletePackage,
-  getTours,
-  updateTourData,
-} from "../services/tourService";
+import { TourService } from "../services/tourService";
+
+const tourService = new TourService();
 
 export class TourController {
   addTour = async (req, res: express.Response, next) => {
@@ -22,7 +19,7 @@ export class TourController {
       return res.status(400).json({ errors: validationErr.array() });
     }
     if (userId > 0) {
-      let tourExist = await getTours({
+      let tourExist = await tourService.getTours({
         package_name: req.body.name,
         user: req.body.user.id,
       });
@@ -43,7 +40,7 @@ export class TourController {
           user: req.body.user,
         };
         console.log(tour.user);
-        await addNewTour(tour);
+        await tourService.addNewTour(tour);
         return res.status(200).json("Saved Tour Data / Awaiting Confirmation");
       }
     }
@@ -53,7 +50,7 @@ export class TourController {
   viewTours = async (req, res: express.Response, next) => {
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
     if (userId > 0) {
-      let totalTour = await getTours({
+      let totalTour = await tourService.getTours({
         user: {
           id: userId,
         },
@@ -72,7 +69,7 @@ export class TourController {
     //const skip= (take-1) > 1 ? (take-1):0
     const skip = (parseInt(req.params.take) - 1) * ITEMS_PER_PAGE;
     let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
-    let totalTour = await getTours({
+    let totalTour = await tourService.getTours({
       where: {
         user: {
           id: userId,
@@ -91,7 +88,7 @@ export class TourController {
     let roleId = parseInt(req.headers.role[0]);
     let name = req.body.name;
     let tourId = req.body.tourId;
-    let tourExist = await getTours({
+    let tourExist = await tourService.getTours({
       package_name: req.body.name,
       user: {
         id: req.body.user,
@@ -109,7 +106,7 @@ export class TourController {
     }
     //update Request
     if (tourExist) {
-      let myTour = await updateTourData(tourId, {
+      let myTour = await tourService.updateTourData(tourId, {
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         tour_image: "http://localhost:8080/uploads/" + req.file.filename,
@@ -132,7 +129,7 @@ export class TourController {
   };
   removePackage = async (req: express.Request, res: express.Response, next) => {
     const id = +req.params.id;
-    const myTour = await deletePackage(id);
+    const myTour = await tourService.deletePackage(id);
     if (myTour) {
       return res.status(200).json("Tour Package Deleted");
     }

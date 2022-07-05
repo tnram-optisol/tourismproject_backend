@@ -8,11 +8,11 @@ import { AppDataSource } from "../data-source";
 import { TourOrders } from "../entity/TourOrders";
 import { BookRoom } from "../entity/BookRoom";
 import { HotelOrders } from "../entity/HotelOrders";
-import { createNewNotification } from "../services/notificationService";
 import { Notification } from "../entity/Notification";
 const router = express.Router();
 
 require("dotenv").config();
+
 
 const bookData = AppDataSource.getRepository(BookTour);
 const tourOrder = AppDataSource.getRepository(TourOrders);
