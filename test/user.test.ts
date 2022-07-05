@@ -1,7 +1,7 @@
 import "mocha";
 import * as chai from "chai";
 import chaiHttp = require("chai-http");
-import * as app from "../src/index";
+//import * as app from "../src/index";
 import { userController } from "../src/router/userRouter";
 import { UserController } from "../src/controller/UserController";
 import { assert, expect } from "chai";
@@ -15,6 +15,8 @@ chai.use(chaiHttp);
 
 
 const token = "";
+
+const app = "http://localhost:8080";
 
 describe("Require a controller", () => {
   const myObj = userController;

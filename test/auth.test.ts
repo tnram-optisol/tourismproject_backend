@@ -1,13 +1,18 @@
 import "mocha";
 import * as chai from "chai";
 import chaiHttp = require("chai-http");
-import * as app from "../src/index";
+//import * as app from "../src/index";
 import { authController } from "../src/router/authRouter";
 import { AuthController } from "../src/controller/AuthController";
 import { expect } from "chai";
-import { USER_DATA } from "../src/constants/db.constants";
+import {
+  ADMIN_NOTIFICATION_DATA,
+  USER_DATA,
+} from "../src/constants/db.constants";
 
 chai.use(chaiHttp);
+
+const app = "http://localhost:8080";
 
 describe("Auth Controller imports", () => {
   const myObj = authController;
@@ -63,9 +68,19 @@ describe("Login Check", () => {
       const user = await USER_DATA.findOneBy({
         email: "test1@abc.com",
       });
-      USER_DATA.remove(user).then((res) => {
-        console.log("Removed user -- test@abc.com");
+      const notification = await ADMIN_NOTIFICATION_DATA.findOneBy({
+        notification: `test has joined us on ${new Date().toLocaleDateString()}`,
       });
+      if (notification) {
+        ADMIN_NOTIFICATION_DATA.remove(notification).then((res) => {
+          console.log(`Removed notification for test`);
+        });
+      }
+      if (user) {
+        USER_DATA.remove(user).then((res) => {
+          console.log("Removed user -- test@abc.com");
+        });
+      }
     });
   });
 });
