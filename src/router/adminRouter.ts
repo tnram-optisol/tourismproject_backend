@@ -69,3 +69,6 @@ router.get("/notification", adminController.adminAllNotifications);
 router.delete("/notification/:id", adminController.deleteNotification);
 
 export default router;
+
+//for testing purpose
+export { adminController };
