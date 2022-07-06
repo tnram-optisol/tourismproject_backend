@@ -17,6 +17,7 @@ export class CategoryService {
   getAllCategory = async (query?: any) => {
     if (query) {
       const resultData = await CATEGORY_DATA.findAndCount(query);
+      console.log(resultData);
       return resultData;
     }
     const resultData = await CATEGORY_DATA.find();

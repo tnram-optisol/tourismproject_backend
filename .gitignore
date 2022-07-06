@@ -5,3 +5,6 @@ build/
 tmp/
 temp/
 .env
+/test_router
+/.nyc_output
+/coverage

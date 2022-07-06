@@ -8,7 +8,6 @@ import {
 export class AdminService {
   getAllRequests = async (query) => {
     const resultData = await REQUEST_DATA.findBy(query);
-    console.log(resultData);
     return resultData;
   };
 

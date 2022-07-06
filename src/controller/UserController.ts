@@ -1,7 +1,6 @@
 import * as express from "express";
 import { validationResult } from "express-validator";
 
-
 import { TourService } from "../services/tourService";
 import * as mailService from "../services/mailService";
 import { BannerService } from "../services/bannerService";
@@ -16,8 +15,8 @@ const adminService = new AdminService();
 const bannerService = new BannerService();
 const reviewService = new ReviewService();
 const tourService = new TourService();
-const hotelService = new HotelService(); 
-const categoryService = new CategoryService(); 
+const hotelService = new HotelService();
+const categoryService = new CategoryService();
 
 export class UserController {
   getAllTours = async (req, res: express.Response, next) => {

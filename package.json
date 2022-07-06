@@ -46,7 +46,7 @@
       "start": "ts-node src/index.ts",
       "typeorm": "typeorm-ts-node-commonjs",
       "dev": "nodemon --exec ts-node src/index.ts --watch ",
-      "test": "mocha -require ts-node/register test/*.*.ts",
-      "test:watch": "mocha -r ts-node/register --watch --watch-files domains/**/*.ts,test/*.ts,test/*/*.*ts test/*/*.*.ts"
+      "test": "nyc --reporter=html mocha -require ts-node/register test/*/*.*.ts",
+      "test:watch": "mocha -r ts-node/register --watch --watch-files domains/**/*.ts,test/*/*.*.ts  test/*/*.*.ts"
    }
 }
