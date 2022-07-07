@@ -9,7 +9,7 @@ import { OTP_DATA } from "../../src/constants/db.constants";
 const myObj = new OtpService();
 
 describe("Otp Service - Test", () => {
-  let email, otp, expiresIn;
+  let email: string, otp: number, expiresIn: number;
   beforeEach(() => {
     email = "";
     otp = 0;
