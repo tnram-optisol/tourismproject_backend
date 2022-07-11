@@ -20,7 +20,11 @@ router.post(
   [
     body("user.email").isEmail().withMessage("Invalid Email"),
     body("user.password").isLength({ min: 6 }).withMessage("Invalid Password"),
-    body("user.name").isAlpha().withMessage("Invalid Name"),
+    body("user.name")
+      .exists()
+      .trim()
+      .matches('/[a-zA-Z. ]/')
+      .withMessage("Invalid Name"),
     body("user.place").isAlpha().withMessage("Invalid Place"),
     body("user.contact").isNumeric().withMessage("Invalid Contact"),
     body("user.roleId").isNumeric().withMessage("Invalid RoleId"),

@@ -31,13 +31,13 @@ router.post(
   "/add",
   upload.single("file"),
   [
-    body("name").isAlpha().withMessage("Package Name must be a Text"),
+    body("name").exists().withMessage("Package Name must be a Text"),
     body("from").isAlpha().withMessage("From location must be a Text"),
     body("to").isAlpha().withMessage("To location must be a Text"),
     body("license")
       .exists()
       .withMessage("Tour license Must be a Alpha-Numeric"),
-    body("description").isAlpha().withMessage("Description must be a Text"),
+    body("description").exists().withMessage("Description must be a Text"),
     body("startDate").exists().withMessage("Start Date must be a Date"),
     body("endDate").exists().withMessage("End Date must be a Date"),
     body("days").isNumeric().withMessage("Tour days Must be a Number"),

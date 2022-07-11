@@ -51,6 +51,8 @@ router.get("/rating/:id", userController.viewRating);
 
 router.get("/user/profile", userController.viewProfile);
 
+router.get("/user/coupon", userController.getUserCoupon);
+
 export default router;
 
 //for testing purpose

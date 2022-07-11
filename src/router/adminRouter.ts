@@ -68,6 +68,10 @@ router.get("/notification", adminController.adminAllNotifications);
 
 router.delete("/notification/:id", adminController.deleteNotification);
 
+router.get("/get/coupon", adminController.getAllCoupon);
+
+router.post("/add/coupon", adminController.saveNewCoupon);
+
 export default router;
 
 //for testing purpose
