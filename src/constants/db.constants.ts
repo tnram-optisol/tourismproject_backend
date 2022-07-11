@@ -4,6 +4,7 @@ import { Banner } from "../entity/Banner";
 import { BookRoom } from "../entity/BookRoom";
 import { BookTour } from "../entity/BookTour";
 import { Category } from "../entity/Category";
+import { Coupon } from "../entity/Coupon";
 import { HotelOrders } from "../entity/HotelOrders";
 import { Hotels } from "../entity/Hotels";
 import { Notification } from "../entity/Notification";
@@ -35,6 +36,7 @@ export const ADMIN_MAIL_DATA = AppDataSource.getRepository(AdminMail);
 export const ADMIN_NOTIFICATION_DATA =
   AppDataSource.getRepository(Notification);
 export const OTP_DATA = AppDataSource.getRepository(Otp);
+export const COUPON_DATA = AppDataSource.getRepository(Coupon);
 
 export const BANNER = new Banner();
 export const CATEGORY = new Category();
@@ -50,3 +52,4 @@ export const TOUR_REVIEW = new TourReview();
 export const ADMIN_MAIL = new AdminMail();
 export const ADMIN_NOTIFICATION = new Notification();
 export const OTP = new Otp();
+export const COUPON = new Coupon();

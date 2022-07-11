@@ -7,6 +7,7 @@ import { Banner } from "./entity/Banner";
 import { BookRoom } from "./entity/BookRoom";
 import { BookTour } from "./entity/BookTour";
 import { Category } from "./entity/Category";
+import { Coupon } from "./entity/Coupon";
 import { HotelOrders } from "./entity/HotelOrders";
 import { Hotels } from "./entity/Hotels";
 import { Notification } from "./entity/Notification";
@@ -46,6 +47,7 @@ export const AppDataSource = new DataSource({
     Category,
     TourCategory,
     Notification,
+    Coupon,
     Otp,
   ],
   migrations: [],

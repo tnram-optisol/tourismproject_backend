@@ -31,4 +31,7 @@ export class Users {
   @ManyToOne(() => Roles, { nullable: false, eager: true })
   @JoinColumn({ name: "role_id" })
   role: Roles;
+
+  @Column({ type: "boolean", default: "false" })
+  external: boolean;
 }
