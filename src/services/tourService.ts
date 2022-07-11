@@ -8,8 +8,6 @@ import {
 import { AppDataSource } from "../data-source";
 import { Notification } from "../entity/Notification";
 
-
-
 export class TourService {
   tourRequests = async (limit: number, skip: number, search?: any) => {
     if (search === "") {
@@ -65,9 +63,9 @@ export class TourService {
     tour.max_person = 100;
     tour.cost = tourData.cost;
     tour.user = tourData.user;
-    await TOUR_DATA.save(tour);
+    const response = await TOUR_DATA.save(tour);
 
-    const message = `${tour.user.name} has raised request to add ${tour.package_name}`;
+    const message = `${response.user.name} has raised request to add ${tour.package_name}`;
     const type = "request_tour";
     const newNotification = new Notification();
     newNotification.notification = message;

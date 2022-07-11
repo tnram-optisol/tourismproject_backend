@@ -29,7 +29,7 @@ export class AdminService {
           }
         )
         .getMany();
-      console.log(response);
+
       return response;
     }
     if (take !== 0 || skip !== 0) {
@@ -37,11 +37,9 @@ export class AdminService {
         take: take,
         skip: skip,
       });
-      console.log(response);
       return response;
     }
     const response = USER_DATA.findAndCount();
-    console.log(response);
     return response;
   };
 }

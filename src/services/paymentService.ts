@@ -34,7 +34,7 @@ export const createCheckOustSession = async (product) => {
   try {
     const promotionCode = await stripe.promotionCodes.create({
       coupon: generateCoupon.id,
-      code: "TOUR20",
+      code: product.coupon,
     });
   } catch (err) {
     console.log(err);
