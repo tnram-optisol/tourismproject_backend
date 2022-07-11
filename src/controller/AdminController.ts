@@ -4,6 +4,7 @@ import { validationResult } from "express-validator";
 import { AdminService } from "../services/adminService";
 import { BannerService } from "../services/bannerService";
 import { CategoryService } from "../services/categoryService";
+import { addCouponsData, getCouponsData } from "../services/couponService";
 import { HotelService } from "../services/hotelService";
 import { NotificationService } from "../services/notificationService";
 import { getAllHotelOrders, getAllTourOrders } from "../services/orderService";
@@ -241,5 +242,26 @@ export class AdminController {
       return res.status(200).json({ notification });
     }
     return res.status(401).json("No Orders Exists");
+  };
+
+  getAllCoupon = async (req: express.Request, res: express.Response, next) => {
+    const limit = req.query.limit ? +req.query.limit : 0;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const search = req.query.search ? req.query.search : "";
+    const coupons = await getCouponsData(limit, skip, search);
+    if (coupons) {
+      return res.status(200).json({ coupons });
+    }
+    return res.status(401).json("No Coupons Exists");
+  };
+
+  saveNewCoupon = async (req: express.Request, res: express.Response, next) => {
+    const coupon = {
+      coupon_name: req.body.coupon,
+      percent_off: +req.body.percent,
+    };
+    const result = await addCouponsData(coupon);
+    return res.status(200).json("Coupon Added");
   };
 }

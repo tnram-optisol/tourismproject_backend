@@ -7,7 +7,7 @@ const tourService = new TourService();
 
 export class TourController {
   addTour = async (req, res: express.Response, next) => {
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = req.headers.user;
     const fileType = ["image/jpg", "image/png", "image/jpeg"];
     if (fileType.findIndex((e) => e === req.file.mimetype) === -1) {
       return res
@@ -20,39 +20,45 @@ export class TourController {
     }
     if (userId > 0) {
       let tourExist = await tourService.getTours({
-        package_name: req.body.name,
-        user: req.body.user.id,
-      });
-      if (tourExist) {
-        return res.status(400).json("Tour Exists");
-      } else {
-        let tour = {
+        where: {
           package_name: req.body.name,
-          from: req.body.from,
-          to: req.body.to,
-          tour_image: "http://localhost:8080/uploads/" + req.file.filename,
-          provider_license: req.body.license,
-          description: req.body.description,
-          startDate: req.body.startDate,
-          endDate: req.body.endDate,
-          total_days: req.body.days,
-          cost: req.body.cost,
-          user: req.body.user,
-        };
-        console.log(tour.user);
-        await tourService.addNewTour(tour);
-        return res.status(200).json("Saved Tour Data / Awaiting Confirmation");
+          user: {
+            id: userId,
+          },
+        },
+      });
+      if (tourExist.length > 0) {
+        console.log(tourExist);
+        return res.status(400).json("Tour Exists");
       }
+      let tour = {
+        package_name: req.body.name,
+        from: req.body.from,
+        to: req.body.to,
+        tour_image: "http://localhost:8080/uploads/" + req.file.filename,
+        provider_license: req.body.license,
+        description: req.body.description,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        total_days: req.body.days,
+        cost: req.body.cost,
+        user: userId,
+      };
+      console.log(tour.user);
+      await tourService.addNewTour(tour);
+      return res.status(200).json("Saved Tour Data / Awaiting Confirmation");
     }
     return res.status(400).json("No User Exists");
   };
 
   viewTours = async (req, res: express.Response, next) => {
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = req.headers.user;
     if (userId > 0) {
       let totalTour = await tourService.getTours({
-        user: {
-          id: userId,
+        where: {
+          user: {
+            id: userId,
+          },
         },
       });
       if (totalTour) {
@@ -68,7 +74,8 @@ export class TourController {
     const take = ITEMS_PER_PAGE;
     //const skip= (take-1) > 1 ? (take-1):0
     const skip = (parseInt(req.params.take) - 1) * ITEMS_PER_PAGE;
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = req.headers.user;
+    console.log(userId);
     let totalTour = await tourService.getTours({
       where: {
         user: {

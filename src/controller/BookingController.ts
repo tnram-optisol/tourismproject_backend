@@ -16,7 +16,7 @@ export class BookingController {
     let tourId = req.body.userData.package_id;
     let userId = req.body.userData.user.id;
     let maxPerson = req.body.userData.maxPerson;
-    let role = req.headers.role[0] ? parseInt(req.headers.role[0]) : 0;
+    let role = +req.headers.role;
     const validationErr = validationResult(req);
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
@@ -36,7 +36,7 @@ export class BookingController {
     res: express.Response,
     next
   ) => {
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = +req.headers.user;
     if (userId === 0) {
       return res.status(400).json("Please check your credentials");
     }
@@ -52,7 +52,7 @@ export class BookingController {
     res: express.Response,
     next
   ) => {
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = +req.headers.user;
     if (userId === 0) {
       return res.status(400).json("Please check your credentials");
     }
@@ -67,7 +67,7 @@ export class BookingController {
     const limit = req.query.limit ? +req.query.limit : 0;
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = +req.headers.user;
     if (userId === 0) {
       return res.status(400).json("Please check your credentials");
     }
@@ -83,7 +83,7 @@ export class BookingController {
     const limit = req.query.limit ? +req.query.limit : 0;
     const page = req.query.page ? +req.query.page : 0;
     const skip = page * limit;
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = +req.headers.user;
     if (userId === 0) {
       return res.status(400).json("Please check your credentials");
     }
@@ -105,7 +105,7 @@ export class BookingController {
       user: req.body.bookHotel.user,
       room: req.body.bookHotel.roomId,
     };
-    let role = req.headers.role[0] ? parseInt(req.headers.role[0]) : 0;
+    let role = +req.headers.role;
     if (!validationErr.isEmpty()) {
       return res.status(400).json({ errors: validationErr.array() });
     }

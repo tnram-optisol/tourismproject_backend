@@ -10,7 +10,7 @@ import * as mailService from "../services/mailService";
 import { OtpService } from "../services/OtpService";
 
 const otpService = new OtpService();
-const authService = new AuthService(); 
+const authService = new AuthService();
 const notificationService = new NotificationService();
 
 export class AuthController {
@@ -37,7 +37,8 @@ export class AuthController {
         let token = await this.createToken(
           userExist.email,
           userExist.role.id,
-          userExist.id
+          userExist.id,
+          userExist.external
         );
         return res.status(200).json({
           name: userExist.name,
@@ -57,6 +58,20 @@ export class AuthController {
       return res.status(400).json({ errors: validationErr.array() });
     }
     if (userExist) {
+      if (req.body.user.external) {
+        let token = await this.createToken(
+          userExist.email,
+          userExist.role.id,
+          userExist.id,
+          userExist.external
+        );
+        return res.status(200).json({
+          name: userExist.name,
+          role: userExist.role.id,
+          token: token,
+          external: userExist.external,
+        });
+      }
       return res.status(400).json("User Exists Already");
     } else {
       let password = await this.createPassword(req.body.user.password);
@@ -70,6 +85,19 @@ export class AuthController {
           message,
           type
         );
+        if (req.body.user.external) {
+          let token = await this.createToken(
+            result.email,
+            result.role.id,
+            result.id,
+            userExist.external
+          );
+          return res.status(200).json({
+            name: result.name,
+            role: result.role.id,
+            token: token,
+          });
+        }
         return res.status(200).json("Successfully Registered");
       } catch (err) {
         return res.status(500).json("Server Error");
@@ -141,12 +169,18 @@ export class AuthController {
     return result;
   };
 
-  createToken = async (email: string, role: number, id: number) => {
+  createToken = async (
+    email: string,
+    role: number,
+    id: number,
+    external: boolean
+  ) => {
     const token = await jwt.sign(
       {
         id: id,
         email: email,
         role: role,
+        external: external,
       },
       "secretKey",
       { expiresIn: "2h" }

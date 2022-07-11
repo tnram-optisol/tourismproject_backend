@@ -4,11 +4,11 @@ import { validationResult } from "express-validator";
 import { HotelService } from "../services/hotelService";
 import { getAllHotelOrders } from "../services/orderService";
 
-const hotelService = new HotelService()
+const hotelService = new HotelService();
 
 export class HotelController {
   viewHotel = async (req, res: express.Response, next) => {
-    let userId = req.headers.user[0];
+    let userId = req.headers.user;
     let hotelExist = await hotelService.getHotels({
       user: {
         id: parseInt(userId),
@@ -22,7 +22,7 @@ export class HotelController {
 
   viewAllRooms = async (req, res: express.Response, next) => {
     let hotelId = +req.params.id;
-    let userId = req.headers.user[0] ? parseInt(req.headers.user[0]) : 0;
+    let userId = +req.headers.user;
     let roomExist = await hotelService.getAllRooms({
       where: {
         hotel: {
@@ -101,7 +101,7 @@ export class HotelController {
     res: express.Response,
     next
   ) => {
-    const roleId = +req.headers.role[0];
+    const roleId = +req.headers.role;
     let hotelOrderExist = await getAllHotelOrders();
     if (hotelOrderExist) {
       return res.status(200).json(hotelOrderExist);

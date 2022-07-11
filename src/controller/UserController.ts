@@ -9,6 +9,7 @@ import { AdminService } from "../services/adminService";
 import { ReviewService } from "../services/reviewService";
 import { CategoryService } from "../services/categoryService";
 import { HotelService } from "../services/hotelService";
+import { getCouponsData } from "../services/couponService";
 
 const authService = new AuthService();
 const adminService = new AdminService();
@@ -34,6 +35,7 @@ export class UserController {
           status: true,
         },
       },
+      take: 9,
       order: {
         sequence: "ASC",
       },
@@ -219,7 +221,7 @@ export class UserController {
   };
 
   viewProfile = async (req: express.Request, res: express.Response, next) => {
-    const id = req.headers.user[0] ? +req.headers.user[0] : 0;
+    const id = +req.headers.user;
     if (id === 0) {
       return res.status(400).json("No Profile Exists");
     }
@@ -228,5 +230,17 @@ export class UserController {
     };
     const userData = await authService.findUser(query);
     return res.status(200).json(userData);
+  };
+
+  getUserCoupon = async (req: express.Request, res: express.Response, next) => {
+    const limit = 1;
+    const page = req.query.page ? +req.query.page : 0;
+    const skip = page * limit;
+    const search = req.query.search ? req.query.search : "";
+    const coupons = await getCouponsData(limit, skip, search);
+    if (coupons) {
+      return res.status(200).json({ coupons });
+    }
+    return res.status(401).json("No Coupons Exists");
   };
 }
