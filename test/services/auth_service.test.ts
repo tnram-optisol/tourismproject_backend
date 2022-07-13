@@ -1,10 +1,11 @@
 import "mocha";
-import * as express from "express";
 import * as chai from "chai";
 import * as sinon from "sinon";
-import { REQUEST_DATA, USER_DATA } from "../../src/constants/db.constants";
+import { USER_DATA } from "../../src/constants/db.constants";
 import { AuthService } from "../../src/services/authService";
 import { expect } from "chai";
+import { Users } from "../../src/entity/User";
+import { Roles } from "../../src/entity/Roles";
 
 const myObj = new AuthService();
 
@@ -19,11 +20,24 @@ describe("Admin Service - Test", () => {
   afterEach(() => {
     sinon.restore();
   });
-  it("Must find a user Data", async (done) => {
-    const spy = sinon.spy(USER_DATA, "findOneBy");
-    myObj.findUser(query);
-    sinon.assert.calledOnce(spy);
-    sinon.assert.calledWith(spy, query);
-    done();
+  it("Must find a user Data", (done) => {
+    const resultData: Users = {
+      id: 0,
+      name: "",
+      email: "",
+      password: "",
+      place: "",
+      contact: "",
+      role: new Roles(),
+      external: false,
+    };
+    const stub = sinon.stub(USER_DATA, "findOneBy").resolves(resultData);
+    myObj.findUser(query).then((result) => {
+      expect(stub.calledOnce).to.be.true;
+      expect(stub.calledWith(query)).to.be.true;
+      expect(result).to.be.an("object");
+      expect(result).have.a.property("email");
+      done();
+    });
   });
 });
