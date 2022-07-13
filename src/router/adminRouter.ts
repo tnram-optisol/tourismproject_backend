@@ -72,6 +72,8 @@ router.get("/get/coupon", adminController.getAllCoupon);
 
 router.post("/add/coupon", adminController.saveNewCoupon);
 
+router.delete("/delete/coupon/:id", adminController.deleteCoupon);
+
 export default router;
 
 //for testing purpose
