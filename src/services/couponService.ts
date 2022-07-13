@@ -35,3 +35,11 @@ export const addCouponsData = async (coupon: {
   const response = await COUPON_DATA.save(new_coupon);
   return response;
 };
+
+export const removeCoupon = async (id: number) => {
+  const coupon = await COUPON_DATA.findOneBy({
+    coupon_id: id,
+  });
+  const response = await COUPON_DATA.remove(coupon);
+  return coupon;
+};

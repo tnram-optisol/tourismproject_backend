@@ -5,6 +5,7 @@ import {
   CATEGORY_DATA,
   TOURCATEGORY,
   TOUR_CATEGORY_DATA,
+  TOUR_DATA,
   TOUR_REVIEW_DATA,
 } from "../constants/db.constants";
 import { Category } from "../entity/Category";
@@ -37,20 +38,26 @@ export class CategoryService {
     return resultData;
   };
 
-  updateCategory = async (tour: Tours, category: number, closed_on: Date) => {
-    const newCategory = TOURCATEGORY;
-    newCategory.tour = tour;
-    newCategory.category = category;
-    newCategory.closed_on = closed_on;
+  updateCategory = async (tour: number, category: number, closed_on: Date) => {
+    const tourData = await TOUR_DATA.findOneBy({
+      tour_id: tour,
+    });
     const categoryExist = await TOUR_CATEGORY_DATA.findOneBy({
       tour: {
-        tour_id: tour.tour_id,
+        tour_id: tour,
       },
     });
     if (categoryExist) {
+      categoryExist.tour = tourData;
+      categoryExist.category = category;
+      categoryExist.closed_on = closed_on;
       const resultData = await TOUR_CATEGORY_DATA.save(categoryExist);
       return resultData;
     }
+    const newCategory = TOURCATEGORY;
+    newCategory.tour = tourData;
+    newCategory.category = category;
+    newCategory.closed_on = closed_on;
     const resultData = await TOUR_CATEGORY_DATA.save(newCategory);
     return resultData;
   };
