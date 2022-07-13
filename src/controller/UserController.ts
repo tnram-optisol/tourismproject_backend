@@ -10,6 +10,7 @@ import { ReviewService } from "../services/reviewService";
 import { CategoryService } from "../services/categoryService";
 import { HotelService } from "../services/hotelService";
 import { getCouponsData } from "../services/couponService";
+import { AuthController } from "./AuthController";
 
 const authService = new AuthService();
 const adminService = new AdminService();
@@ -242,5 +243,28 @@ export class UserController {
       return res.status(200).json({ coupons });
     }
     return res.status(401).json("No Coupons Exists");
+  };
+
+  updateProfile = async (req: express.Request, res: express.Response, next) => {
+    try {
+      let userExist = await authService.findUser({ email: req.body.email });
+      if (!userExist) {
+        return res.status(400).json("User Not Found");
+      }
+      if (userExist) {
+        const generatePassword = await new AuthController().createPassword(
+          req.body.user.password
+        );
+        const result = await authService.updateProfile(
+          userExist.id,
+          req.body.user,
+          generatePassword
+        );
+        return res.status(200).json("Profile Updated");
+      }
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json("Server Error");
+    }
   };
 }

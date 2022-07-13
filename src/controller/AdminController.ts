@@ -4,7 +4,11 @@ import { validationResult } from "express-validator";
 import { AdminService } from "../services/adminService";
 import { BannerService } from "../services/bannerService";
 import { CategoryService } from "../services/categoryService";
-import { addCouponsData, getCouponsData } from "../services/couponService";
+import {
+  addCouponsData,
+  getCouponsData,
+  removeCoupon,
+} from "../services/couponService";
 import { HotelService } from "../services/hotelService";
 import { NotificationService } from "../services/notificationService";
 import { getAllHotelOrders, getAllTourOrders } from "../services/orderService";
@@ -263,5 +267,11 @@ export class AdminController {
     };
     const result = await addCouponsData(coupon);
     return res.status(200).json("Coupon Added");
+  };
+
+  deleteCoupon = async (req: express.Request, res: express.Response, next) => {
+    const coupon_id = +req.params.id;
+    const result = await removeCoupon(coupon_id);
+    return res.status(200).json("Coupon Removed");
   };
 }

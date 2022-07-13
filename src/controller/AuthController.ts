@@ -7,7 +7,7 @@ import { validationResult } from "express-validator";
 import { AuthService } from "../services/authService";
 import { NotificationService } from "../services/notificationService";
 import * as mailService from "../services/mailService";
-import { OtpService } from "../services/OtpService";
+import { OtpService } from "../services/otpService";
 
 const otpService = new OtpService();
 const authService = new AuthService();
@@ -100,6 +100,7 @@ export class AuthController {
         }
         return res.status(200).json("Successfully Registered");
       } catch (err) {
+        console.log(err);
         return res.status(500).json("Server Error");
       }
     }
