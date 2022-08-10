@@ -1,0 +1,477 @@
+openapi: 3.0.1
+info:
+  title: Booking Project
+  description: ''
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Auth
+    description: Operation about auth functions
+  - name: Admin
+    description: Admin Functions
+paths:
+  /signup:
+    post:
+      tags:
+        - Auth
+      summary: Registers a user
+      operationId: userRegister
+      description: Register a user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+            examples:
+              User_Register:
+                $ref: '#/components/examples/CreateUser'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                Create_User_Response:
+                  $ref: '#/components/examples/CreateUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+  /signin:
+    post:
+      tags:
+        - Auth
+        - Admin
+      summary: User and Admin Login Route
+      operationId: userSignIn
+      description: |-
+        `For admin choose admin signin example.`
+
+        `For user choose user signin example.`
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUser'
+            examples:
+              User_SignIn:
+                $ref: '#/components/examples/User_SignIn'
+              Admin_SignIn:
+                $ref: '#/components/examples/Admin_SignIn'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                User_SignIn_Response:
+                  $ref: '#/components/examples/userLoginResponse'
+                Admin_SignIn_Response:
+                  $ref: '#/components/examples/adminLoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+  /admin/category:
+    get:
+      tags:
+        - Admin
+      summary: Get Category Details Admin
+      operationId: getCategory
+      description: |-
+        Get category details Response
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                AllCategoriesResponse:
+                  $ref: '#/components/examples/AllCategoriesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /admin/all/users:
+    get:
+      tags:
+        - Admin
+      summary: Get all Users 
+      operationId: getUsers
+      description: |-
+         Get all Users Response
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                AllUsers_Response:
+                  $ref: '#/components/examples/AllUsersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /admin/tour/orders:
+    get:
+      tags:
+        - Admin
+      summary: Get all Tour Orders
+      operationId: getTourOrders
+      description: |-
+         Get all Tour Orders
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                Admin_TourOrders_Response:
+                  $ref: '#/components/examples/AdminTourOrdersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+components:
+  parameters:
+    role_header:
+      name: Role
+      in: header
+      schema:
+        type: integer
+      description: _`Must be 1 for admin`_
+      required: true
+    app_language:
+      in: header
+      name: app_language
+      required: true
+      description: app language
+      schema:
+        type: string
+        example: en
+    app_version:
+      in: header
+      name: app_version
+      required: true
+      description: app version
+      schema:
+        type: integer
+        example: '1'
+    sortBy:
+      name: sortBy
+      in: query
+      description: Select the sort order (Ex:DESC)
+      schema:
+        type: string
+        enum:
+          - DESC
+          - ASC
+        example: DESC
+    sortField:
+      name: sortField
+      in: query
+      description: enter the sort order (Ex:created_at)
+      schema:
+        type: string
+        example: updated_at
+    page:
+      name: page
+      in: query
+      description: Mention the page number (Ex:10)
+      required: true
+      schema:
+        type: integer
+        example: 1
+    limit:
+      name: limit
+      in: query
+      description: Mention the limit should display per page (Ex:10)
+      required: true
+      schema:
+        type: integer
+        example: 10
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CreateUser:
+      allOf:
+        - type: object
+          properties:
+            name:
+              type: string
+            contact:
+              type: string
+            password:
+              type: string
+            email:
+              type: string
+            place:
+              type: string
+            roleId:
+              type: number
+              enum:
+                - 2
+                - 3
+                - 4
+    Error:
+      type: object
+      required:
+        - statusCode
+        - message
+      properties:
+        statusCode:
+          type: integer
+        message:
+          type: string
+  examples:
+    CreateUser:
+      value:
+        user:
+          name: testuser
+          email: testuser@abc.com
+          password: Password!#
+          place: London
+          contact: 7654321908
+          roleId: 4
+    User_SignIn:
+      value:
+        email: testuser@abc.com
+        password: Password!#
+    Admin_SignIn:
+      value:
+        email: admin@abc.com
+        password: admin123
+    CreateUserResponse:
+      value: Successfully Registered
+    userLoginResponse:
+      value:
+        name: testuser
+        role: 4
+        token: jwt-token
+    adminLogin:
+      value:
+        email: just-students-admin@yopmail.com
+        password: Password1!
+    adminLoginResponse:
+      value:
+        result:
+          name: admin
+          role: 1
+          token: jwt-token
+    AllUsersResponse:
+      value:
+        - - id: 3
+            name: admin
+            email: admin@abc.com
+            password: $2b$10$8kQBXgOveaAQq1fCmIUuV.KxE8q7drrFhqiMLG5vQfh88Wi0E4Dp6
+            place: London
+            contact: '6789012344'
+            external: false
+            role:
+              id: 1
+              role: ADMIN
+        - 10
+    AllCategoriesResponse:
+      value:
+       - - id: 10
+           category: HoneyMoon
+           image: https://cdn-icons-png.flaticon.com/512/1247/1247118.png?w=740
+         - 7
+    AdminTourOrdersResponse:
+     value:
+      tourOrder:
+       -  order_id: 653383d2-f664-4ffb-bbdd-a6c29cabcbb5
+          purchased_by: Bob
+          email: bob@abc.com
+          orderCost: 100000
+          description: Purchased Malaysia Tour
+          paymentId: pi_3LGFEPSBqdmfCPO60hOW2vgB
+          discount: 20
+          paymentStatus: true
+          orderStatus: true
+          orderdAt: '2022-06-30T04:44:06.003Z'
+          user:
+            id: 7
+            name: Bob
+            email: bob@abc.com
+            password: $2b$10$r/VZyoQTQ0cJO54uHTZHFeQ9mel6p2.z5h3fE2rygIaXZu39FGm3y
+            place: Japan
+            contact: '7865432109'
+            external: false
+            role:
+              id: 4
+              role: USER
+          bookTour:
+            book_id: 11
+            max_person: 1
+            book_date: 30/6/2022
+            book_status: true
+            payment: true
+            user:
+              id: 7
+              name: Bob
+              email: bob@abc.com
+              password: $2b$10$r/VZyoQTQ0cJO54uHTZHFeQ9mel6p2.z5h3fE2rygIaXZu39FGm3y
+              place: Japan
+              contact: '7865432109'
+              external: false
+              role:
+                id: 4
+                role: USER
+            tour:
+              tour_id: 2
+              package_name: Malaysia Tour
+              from: India
+              to: Malaysia
+              tour_image: http://localhost:8080/uploads/1656426630119malasyia.jpg
+              provider_license: tour/reg/no/190542
+              description: Discover Malaysia with us. Make your holidays remarkable and enjoyable.
+              availablity: true
+              status: true
+              startDate: Tue Jun 28 2022 00:00:00 GMT+0530 (India Standard Time)
+              endDate: Fri Jul 15 2022 00:00:00 GMT+0530 (India Standard Time)
+              max_person: 100
+              total_days: 9
+              cost: 125000
+              user:
+                id: 1
+                name: King
+                email: king@abc.com
+                password: $2b$10$RknJ.rF5V8jFlIb.HBR6TeOSbszCdAH43VzNf6dY14tFfteXHHY1O
+                place: NewYork
+                contact: '8765432100'
+                external: false
+                role:
+                  id: 3
+                  role: TOUR_PROVIDER
+  responses:
+    UserResponse:
+      description: ''
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/components/schemas/CreateUser'
+    NotFound:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 401
+    BadRequest:
+      description: BadRequest
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+    UnprocessableEntity:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Error'
+              - type: object
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 422
