@@ -9,7 +9,9 @@ tags:
   - name: Auth
     description: Operation about auth functions
   - name: Admin
-    description: Admin Functions
+    description: Operation about admin related functions
+  - name: Tour
+    description: Operation about tour related functions
 paths:
   /signup:
     post:
@@ -202,6 +204,120 @@ paths:
       x-codegen-request-body-name: body
       security:
        - BearerAuth: []
+  /tour/view/all:
+    get:
+      tags:
+        - Tour
+      summary: Get all Tours
+      operationId: getAllTours
+      description: |-
+         Get all Tours Data
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+        - $ref: '#/components/parameters/user'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                ViewTours_Response:
+                  $ref: '#/components/examples/ViewToursResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /tour/{take}:
+    get:
+      tags:
+        - Tour
+      summary: Paginate Tours Data
+      operationId: paginateTours
+      description: |-
+         Get Paginate Tours Data
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+        - $ref: '#/components/parameters/user'
+        - name: take
+          in: path
+          schema:
+            type: integer
+          description: To take Page Data (Ex 1)
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                ViewTours_Response:
+                  $ref: '#/components/examples/ViewToursResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /tour/all/orders:
+    get:
+      tags:
+        - Tour
+      summary: Get all Tour Orders
+      operationId: tourOrders
+      description: |-
+         Get all Tour Orders
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+        - $ref: '#/components/parameters/user'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                Admin_TourOrders_Response:
+                  $ref: '#/components/examples/AdminTourOrdersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
 components:
   parameters:
     role_header:
@@ -210,6 +326,13 @@ components:
       schema:
         type: integer
       description: _`Must be 1 for admin`_
+      required: true
+    user:
+      name: User
+      in: header
+      schema:
+        type: integer
+      description: User For the Tour (Ex 1)
       required: true
     app_language:
       in: header
@@ -417,6 +540,33 @@ components:
                 role:
                   id: 3
                   role: TOUR_PROVIDER
+    ViewToursResponse:
+     value:
+        - tour_id: 1
+          package_name: France Tour
+          from: India
+          to: France
+          tour_image: http://localhost:8080/uploads/1656426606067france.jpg
+          provider_license: tour/reg/no/190541
+          description: Discover France with us. Make your journey remarkable and holidays memorable.
+          availablity: true
+          status: true
+          startDate: Tue Jun 28 2022 00:00:00 GMT+0530 (India Standard Time)
+          endDate: Fri Jul 15 2022 00:00:00 GMT+0530 (India Standard Time)
+          max_person: 100
+          total_days: 10
+          cost: 75000
+          user:
+            id: 1
+            name: King
+            email: king@abc.com
+            password: $2b$10$RknJ.rF5V8jFlIb.HBR6TeOSbszCdAH43VzNf6dY14tFfteXHHY1O
+            place: NewYork
+            contact: '8765432100'
+            external: false
+            role:
+              id: 3
+              role: TOUR_PROVIDER
   responses:
     UserResponse:
       description: ''
