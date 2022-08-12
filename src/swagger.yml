@@ -115,7 +115,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateUser'
+                $ref: '#/components/schemas/CategorySchema'
               examples:
                 AllCategoriesResponse:
                   $ref: '#/components/examples/AllCategoriesResponse'
@@ -150,7 +150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateUser'
+                $ref: '#/components/schemas/UserSchema'
               examples:
                 AllUsers_Response:
                   $ref: '#/components/examples/AllUsersResponse'
@@ -409,6 +409,55 @@ components:
                 - 2
                 - 3
                 - 4
+    CategorySchema:
+      allOf:
+        - type: array
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                category:
+                  type: string
+                image:
+                  type: string
+    UserSchema:
+      allOf:
+        - type: array
+          items:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                contact:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+                place:
+                  type: string
+                external:
+                  type: boolean
+                role: 
+                  type: object
+                  properties:
+                    roleId:
+                      type: number
+                      enum:
+                        - 1
+                        - 2
+                        - 3
+                        - 4
+                    role:
+                      type: string
+            
     Error:
       type: object
       required:
