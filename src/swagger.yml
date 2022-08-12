@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Booking Project
+  title: Booking App Services
   description: ''
   version: 1.0.0
 servers:
@@ -12,6 +12,8 @@ tags:
     description: Operation about admin related functions
   - name: Tour
     description: Operation about tour related functions
+  - name: Hotel
+    description: Operation about hotel related functions
 paths:
   /signup:
     post:
@@ -119,6 +121,76 @@ paths:
               examples:
                 AllCategoriesResponse:
                   $ref: '#/components/examples/AllCategoriesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /admin/notification:
+    get:
+      tags:
+        - Admin
+      summary: Get Notification Details Admin
+      operationId: getNotification
+      description: |-
+        Get Notification details Response
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategorySchema'
+              examples:
+                AdminNotificationsResponse:
+                  $ref: '#/components/examples/AdminNotificationsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /admin/banner:
+    get:
+      tags:
+        - Admin
+      summary: Get Banner Details Admin
+      operationId: getBanner
+      description: |-
+         Get Banner Details Admin
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategorySchema'
+              examples:
+                GetAllBannersResponse:
+                  $ref: '#/components/examples/GetAllBannersResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -303,6 +375,120 @@ paths:
               examples:
                 Admin_TourOrders_Response:
                   $ref: '#/components/examples/AdminTourOrdersResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /hotel/view/all:
+    get:
+      tags:
+        - Hotel
+      summary: Get all Hotels
+      operationId: getAllHotels
+      description: |-
+         Get all Hotels Data
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+        - $ref: '#/components/parameters/user'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                ViewHotels_Response:
+                  $ref: '#/components/examples/ViewHotelsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /hotel/view/rooms/{id}:
+    get:
+      tags:
+        - Hotel
+      summary: View Rooms By Hotel Id
+      operationId: viewRoomsByHotel
+      description: |-
+         View Rooms By Hotel Id
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+        - $ref: '#/components/parameters/user'
+        - name: id
+          in: path
+          schema:
+            type: integer
+          description: Id of the Hotel (Ex 1)
+          required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                ViewTours_Response:
+                  $ref: '#/components/examples/ViewRoomsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-codegen-request-body-name: body
+      security:
+       - BearerAuth: []
+  /hotel/all/orders:
+    get:
+      tags:
+        - Hotel
+      summary: Get all Hotel Orders
+      operationId: HotelOrders
+      description: |-
+         Get all Hotel Orders
+      parameters:
+        - $ref: '#/components/parameters/role_header'
+        - $ref: '#/components/parameters/user'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateUser'
+              examples:
+                Admin_TourOrders_Response:
+                  $ref: '#/components/examples/AllHotelOrdersResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -616,6 +802,169 @@ components:
             role:
               id: 3
               role: TOUR_PROVIDER
+    ViewRoomsResponse:
+      value:
+        -   room_id: 5
+            room_name: Luxury's Single Room
+            room_price: 500
+            room_image: https://3.imimg.com/data3/HL/MM/MY-10413033/single-bed-room-services-500x500.jpg
+            max_person: '1'
+            availablity: true
+            description: A perfect single cot room for all persons to stay and explore
+            hotel:
+              hotel_id: 1
+              hotel_name: Hotel Luxury
+              latitude: '48.852638'
+              longitude: '2.332564'
+              address: 10 Rue des 3 Portes, 75005 Paris, France
+              hotel_image: https://www.intechnic.com/hubfs/Blog/Featured%20Images/Best%20Hotel%20Website%20Designs.jpg
+              hotel_license: hotel/reg/no/190541
+              status: true
+              user:
+                id: 5
+                name: Johnson
+                email: john.son@abc.com
+                password: $2b$10$l2BwlaWHCzZ/NVGIUWq6MO3yamwYXzH5Uxh4zc9WHjG4JjQDNczUm
+                place: India
+                contact: '8765432129'
+                external: false
+                role:
+                  id: 2
+                  role: HOTEL_OWNER
+    AllHotelOrdersResponse:
+      value:
+        - - order_id: 497f25a4-9025-4e14-aa8a-52f3ff5eb674
+            purchased_by: Alice
+            email: alice@abc.com
+            orderCost: 500
+            description: Purchased Luxury's Single Room
+            paymentId: pi_3L1WuESBqdmfCPO60L6kzM12
+            discount: 5
+            paymentStatus: true
+            orderStatus: false
+            orderdAt: '2022-05-20T14:35:04.274Z'
+            user:
+              id: 4
+              name: Alice
+              email: alice@abc.com
+              password: $2b$10$ldYy9x5KwuRPSo.gsFrzCuedr8vJLNGqkxvAADPuTDrOXTyNjc5Ou
+              place: china
+              contact: '8765432190'
+              external: false
+              role:
+                id: 4
+                role: USER
+            bookRoom:
+              id: 4
+              in_Date: '2022-05-20'
+              out_Date: '2022-05-21'
+              total_Days: 1
+              total_person: 1
+              book_status: false
+              payment: true
+              user:
+                id: 4
+                name: Alice
+                email: alice@abc.com
+                password: $2b$10$ldYy9x5KwuRPSo.gsFrzCuedr8vJLNGqkxvAADPuTDrOXTyNjc5Ou
+                place: china
+                contact: '8765432190'
+                external: false
+                role:
+                  id: 4
+                  role: USER
+              room:
+                room_id: 5
+                room_name: Luxury's Single Room
+                room_price: 500
+                room_image: https://3.imimg.com/data3/HL/MM/MY-10413033/single-bed-room-services-500x500.jpg
+                max_person: '1'
+                availablity: true
+                description: A perfect single cot room for all persons to stay and explore
+                hotel:
+                  hotel_id: 1
+                  hotel_name: Hotel Luxury
+                  latitude: '48.852638'
+                  longitude: '2.332564'
+                  address: 10 Rue des 3 Portes, 75005 Paris, France
+                  hotel_image: https://www.intechnic.com/hubfs/Blog/Featured%20Images/Best%20Hotel%20Website%20Designs.jpg
+                  hotel_license: hotel/reg/no/190541
+                  status: true
+                  user:
+                    id: 5
+                    name: Johnson
+                    email: john.son@abc.com
+                    password: $2b$10$l2BwlaWHCzZ/NVGIUWq6MO3yamwYXzH5Uxh4zc9WHjG4JjQDNczUm
+                    place: India
+                    contact: '8765432129'
+                    external: false
+                    role:
+                      id: 2
+                      role: HOTEL_OWNER
+        - 1
+    GetAllBannersResponse:
+      value:
+        - - banner_id: 4
+            sequence: 1
+            rating: 5
+            tour:
+              tour_id: 11
+              package_name: America Tour
+              from: India
+              to: America
+              tour_image: http://localhost:8080/uploads/1656943837298america.jpg
+              provider_license: tour/reg/no/190547
+              description: Discover America with us. Make your journey remarkable and holidays memorable.
+              availablity: true
+              status: true
+              startDate: Mon Jul 04 2022 00:00:00 GMT+0530 (India Standard Time)
+              endDate: Sat Jul 16 2022 00:00:00 GMT+0530 (India Standard Time)
+              max_person: 100
+              total_days: 15
+              cost: 150000
+              user:
+                id: 1
+                name: King
+                email: king@abc.com
+                password: $2b$10$RknJ.rF5V8jFlIb.HBR6TeOSbszCdAH43VzNf6dY14tFfteXHHY1O
+                place: NewYork
+                contact: '8765432100'
+                external: false
+                role:
+                  id: 3
+                  role: TOUR_PROVIDER
+        - 10
+    ViewHotelsResponse:
+      value:
+        - hotel_id: 1
+          hotel_name: Hotel Luxury
+          latitude: '48.852638'
+          longitude: '2.332564'
+          address: 10 Rue des 3 Portes, 75005 Paris, France
+          hotel_image: https://www.intechnic.com/hubfs/Blog/Featured%20Images/Best%20Hotel%20Website%20Designs.jpg
+          hotel_license: hotel/reg/no/190541
+          status: true
+          user:
+            id: 5
+            name: Johnson
+            email: john.son@abc.com
+            password: $2b$10$l2BwlaWHCzZ/NVGIUWq6MO3yamwYXzH5Uxh4zc9WHjG4JjQDNczUm
+            place: India
+            contact: '8765432129'
+            external: false
+            role:
+              id: 2
+              role: HOTEL_OWNER
+    AdminNotificationsResponse:
+      value:
+        notification:
+          - id: 2
+            notification: Bob has booked Malaysia Tour
+            type: tour_order
+          - id: 3
+            notification: Alice has canceled Booking for Luxury's Single Room
+            type: hotel_order
+
   responses:
     UserResponse:
       description: ''
